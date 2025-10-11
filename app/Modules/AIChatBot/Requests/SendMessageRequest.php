@@ -1,12 +1,10 @@
 <?php
+namespace App\Modules\AIChatBot\Requests;
 
-namespace App\Modules\Platforms\Requests;
 
-use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Modules\Plans\Enums\PlanBillingCycle;
 
-class PlatformUpdateRequest extends FormRequest
+class SendMessageRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +22,7 @@ class PlatformUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-
+            'message' => ['required', 'string'],
         ];
     }
 }

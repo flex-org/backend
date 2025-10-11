@@ -4,7 +4,7 @@ namespace App\Modules\Platforms\Requests;
 
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Modules\Plans\Enums\PlanBillingCycle;
+use App\Modules\Utilities\enums\BillingCycle;
 use App\Modules\Platforms\Enums\PlatformSellingSystem;
 
 class PlatformStoreRequest extends FormRequest
@@ -25,8 +25,7 @@ class PlatformStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'plan_id' => 'required|integer|exists:plans,id',
-            'billing_cycle' => ['required', 'string', new Enum(PlanBillingCycle::class)],
+            'billing_cycle' => ['required', 'string', new Enum(BillingCycle::class)],
             'domain' => 'required|string|unique:platforms',
             'features' => 'nullable|array',
             'features.*' => 'required|integer|exists:features,id',

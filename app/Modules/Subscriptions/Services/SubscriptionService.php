@@ -9,53 +9,32 @@ use App\Modules\Subscriptions\Enums\SubscriptionStatus;
 class SubscriptionService
 {
 
-
-    public function subscripe($plan, $platform, $platformData)
-    {
-        $pricing = $plan->prices()
-                ->where('billing_cycle', $platformData['billing_cycle'])
-                ->firstOrFail();
-
-        $subscriptionData = match($plan->type) {
-            PlanType::BASIC => $this->prepareBasicSubscriptionData($plan, $pricing),
-            PlanType::PRO => $this->prepareProSubscriptionData($platformData['features'], $pricing),
-        };
-
-        $this->createSubscription(
-            $platform,
-            $pricing->months,
-            $subscriptionData['price'],
-            $plan->id,
-            $subscriptionData['features']
-        );  
-    }
-
-    public function prepareProSubscriptionData($featuresIds, $pricing)
+    public function subscripe($platform, $months, $featuresIds)
     {
         $features = Feature::whereIn('id', $featuresIds)->get();
-        $subscriptionPrice = max(0, $features->sum('price') - $pricing->discount);
-        return ['features' => $features , 'price' => $subscriptionPrice];
+        $price = $features->sum('price') * $months;
+
+        $subscription = $this->createSubscription($price, $platform, $months);
+
+        $this->assignPlatformFeatures(
+            $platform,
+            $subscription,
+            $features
+        );
+
+        return $subscription;
     }
 
-    public function prepareBasicSubscriptionData($plan, $pricing)
+    public function createSubscription($price, $platform, $months)
     {
-        $features = $plan->features()->get();
-        $subscriptionPrice = max(0, $pricing->price - $pricing->discount);
-        return ['features' => $features , 'price' => $subscriptionPrice];
-    }
-
-    public function createSubscription($platform, $months, $price, $planId, $features)
-    {
-        $subscription = Subscription::create([
+        return Subscription::create([
             'platform_id'     => $platform->id,
-            'plan_id'         => $planId,
-            'started_at'      => now()->addDays(7),
+            'started_at'      => now()->addDays(3),
             'renew_at'        => now()->addMonth($months),
             'duration_months' => $months,
             'price'           => $price,
             'status'          => SubscriptionStatus::FREETRIAL,
         ]);
-        $this->assignPlatformFeatures($platform, $subscription, $features);
     }
 
     public function assignPlatformFeatures($platform, $subscription, $features)

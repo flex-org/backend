@@ -15,7 +15,6 @@ class Subscription extends Model
 
     protected $fillable = [
         'platform_id',
-        'plan_id',
         'started_at',
         'renew_at',
         'duration_months',
@@ -32,11 +31,6 @@ class Subscription extends Model
     public function platform(): BelongsTo
     {
         return $this->belongsTo(Platform::class);
-    }
-
-    public function plan(): BelongsTo
-    {
-        return $this->belongsTo(Plan::class);
     }
 
     public function features(): BelongsToMany

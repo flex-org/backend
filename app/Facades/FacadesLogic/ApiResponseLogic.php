@@ -30,43 +30,6 @@ class ApiResponseLogic
         return response($response, $code);
     }
 
-    public function notFound($message = null)
-    {
-        return $this->apiFormat(
-            null,
-            $message ?? __('apiMessages.not_found'),
-            Response::HTTP_NOT_FOUND
-        );
-    }
-
-    public function serverError($message = null)
-    {
-        return $this->apiFormat(
-            null,
-            $message ?? __('apiMessages.server_error'),
-            Response::HTTP_INTERNAL_SERVER_ERROR
-        );
-    }
-
-    public function validationError($errors, $message = null)
-    {
-        return $this->failed(
-            $errors,
-            $message ?? __('apiMessages.validation_error'),
-            Response::HTTP_UNPROCESSABLE_ENTITY
-        );
-    }
-
-    public function unauthorized($message = null, $code = Response::HTTP_UNAUTHORIZED)
-    {
-        return $this->message($message ?? __('apiMessages.unauthorized'), $code);
-    }
-
-    public function forbidden($message = null, $code = Response::HTTP_FORBIDDEN)
-    {
-        return $this->message($message ?? __('apiMessages.forbidden'), $code);
-    }
-
     public function failed($errors, $message, $code)
     {
         $errors = $errors ? ['errors' => $errors] : null;
@@ -81,7 +44,7 @@ class ApiResponseLogic
     {
         return $this->apiFormat(
             ['data' => $data],
-            $message,
+            __($message),
             $code
         );
     }
@@ -90,29 +53,86 @@ class ApiResponseLogic
     {
         return $this->apiFormat(
             null,
-            $message,
+            __($message),
             $code
         );
     }
 
-    public function created($message = null)
+    public function notFound($message = 'apiMessages.not_found')
     {
-        return $this->message(
-            $message ?? __('apiMessages.created'),
-            Response::HTTP_CREATED
+        return $this->apiFormat(
+            null,
+            __($message),
+            Response::HTTP_NOT_FOUND
         );
     }
 
-    public function updated($message = null)
+    public function serverError($message = 'apiMessages.server_error')
     {
-        return $this->message(
-            $message ?? __('apiMessages.updated')
+        return $this->apiFormat(
+            null,
+            __($message),
+            Response::HTTP_INTERNAL_SERVER_ERROR
         );
     }
 
-    public function deleted($message = null)
+    public function validationError($errors, $message = 'apiMessages.validation_error')
     {
-        return $this->message($message ?? __('apiMessages.deleted'), Response::HTTP_NO_CONTENT);
+        return $this->failed(
+            $errors,
+            __($message),
+            Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+    }
+
+    public function unauthorized($message = 'apiMessages.unauthorized', $code = Response::HTTP_UNAUTHORIZED)
+    {
+        return $this->message(
+            __($message), 
+            $code
+        );
+    }
+
+    public function forbidden($message = 'apiMessages.forbidden', $code = Response::HTTP_FORBIDDEN)
+    {
+        return $this->message(
+            __($message), 
+            $code
+        );
+    }
+
+    public function created($data = null, $message = 'apiMessages.created')
+    {
+        return ($data) ? 
+            $this->success(
+                $data,
+                __($message),
+                Response::HTTP_CREATED
+            ) : 
+            $this->message(
+                __($message),
+                Response::HTTP_CREATED
+            );
+    }
+
+    public function updated($data = null, $message = 'apiMessages.updated')
+    {
+        return ($data) ? 
+            $this->success(
+                $data,
+                __($message)
+            ) :
+            $this->message(
+                __($message)
+            );
+    }
+
+    public function deleted($message = 'apiMessages.deleted')
+    {
+        return $this->message( 
+            __($message), 
+            Response::HTTP_NO_CONTENT
+        );
     }
 }
 

@@ -9,12 +9,12 @@ class Theme extends Model
 {
     protected $fillable = [
         'name', 
+        'color',
         'colors',
-        'type'
+        'price'
     ];
 
     protected $casts = [
         'colors' => 'array',
-        'type' => ThemeType::class
     ];
 }

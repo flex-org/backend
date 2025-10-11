@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('icon')->nullable();
             $table->decimal('price', 10, 2)->nullable();
             $table->boolean('active')->default(true);
-            $table->string('type'); // basic, pro
             $table->timestamps();
         });
 

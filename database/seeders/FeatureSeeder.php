@@ -16,7 +16,6 @@ class FeatureSeeder extends Seeder
                 'icon' => 'fa-book',
                 'price' => 0,
                 'active' => true,
-                'type' => 'basic',
                 'translations' => [
                     'en' => [
                         'name' => 'Courses',
@@ -32,7 +31,6 @@ class FeatureSeeder extends Seeder
                 'icon' => 'fa-layer-group',
                 'price' => 0,
                 'active' => true,
-                'type' => 'basic',
                 'translations' => [
                     'en' => [
                         'name' => 'Categories',
@@ -48,7 +46,6 @@ class FeatureSeeder extends Seeder
                 'icon' => 'fa-video',
                 'price' => 0,
                 'active' => true,
-                'type' => 'basic',
                 'translations' => [
                     'en' => [
                         'name' => 'Sessions',
@@ -64,7 +61,6 @@ class FeatureSeeder extends Seeder
                 'icon' => 'fa-file-alt',
                 'price' => 0,
                 'active' => true,
-                'type' => 'pro',
                 'translations' => [
                     'en' => [
                         'name' => 'Assignments',
@@ -80,7 +76,6 @@ class FeatureSeeder extends Seeder
                 'icon' => 'fa-question-circle',
                 'price' => 0,
                 'active' => true,
-                'type' => 'pro',
                 'translations' => [
                     'en' => [
                         'name' => 'Question Bank',
@@ -96,7 +91,6 @@ class FeatureSeeder extends Seeder
                 'icon' => 'fa-clipboard-check',
                 'price' => 0,
                 'active' => true,
-                'type' => 'pro',
                 'translations' => [
                     'en' => [
                         'name' => 'Quizzes & Exams',
@@ -112,7 +106,6 @@ class FeatureSeeder extends Seeder
                 'icon' => 'fa-bullhorn',
                 'price' => 0,
                 'active' => true,
-                'type' => 'pro',
                 'translations' => [
                     'en' => [
                         'name' => 'Announcements',
@@ -128,7 +121,6 @@ class FeatureSeeder extends Seeder
                 'icon' => 'fa-broadcast-tower',
                 'price' => 0,
                 'active' => true,
-                'type' => 'pro',
                 'translations' => [
                     'en' => [
                         'name' => 'Live Sessions',
@@ -144,7 +136,6 @@ class FeatureSeeder extends Seeder
                 'icon' => 'fa-certificate',
                 'price' => 0,
                 'active' => true,
-                'type' => 'pro',
                 'translations' => [
                     'en' => [
                         'name' => 'Certificates',
@@ -160,7 +151,6 @@ class FeatureSeeder extends Seeder
                 'icon' => 'fa-calendar-alt',
                 'price' => 0,
                 'active' => true,
-                'type' => 'pro',
                 'translations' => [
                     'en' => [
                         'name' => 'Calendar',
@@ -176,7 +166,6 @@ class FeatureSeeder extends Seeder
                 'icon' => 'fa-mobile-alt',
                 'price' => 199.99,
                 'active' => true,
-                'type' => 'pro',
                 'translations' => [
                     'en' => [
                         'name' => 'Mobile App',
@@ -194,10 +183,8 @@ class FeatureSeeder extends Seeder
         foreach ($features as $data) {
             $translations = Arr::pull($data, 'translations');
 
-            // إنشاء الـ Feature
             $feature = Feature::create($data);
 
-            // إضافة الترجمة
             foreach ($translations as $locale => $translation) {
                 $feature->translateOrNew($locale)->name = $translation['name'];
                 $feature->translateOrNew($locale)->description = $translation['description'];

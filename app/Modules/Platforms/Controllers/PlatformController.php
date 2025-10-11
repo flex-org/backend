@@ -3,13 +3,17 @@
 namespace App\Modules\Platforms\Controllers;
 
 use App\Facades\ApiResponse;
-use App\Http\Controllers\Controller;
-use App\Modules\Platforms\Services\PlatformService;
-use App\Modules\Features\Requests\FeatureUpdateRequest;
-use App\Modules\Platforms\Enums\PlatformSellingSystem;
-use App\Modules\Platforms\Requests\PlatformStoreRequest;
-use App\Modules\Platforms\Requests\AvailableDomainRequest;
 use Illuminate\Http\Response;
+use App\Http\Controllers\Controller;
+use App\Modules\Utilities\enums\BillingCycle;
+use App\Modules\Platforms\Services\PlatformService;
+use App\Modules\Platforms\Enums\PlatformSellingSystem;
+use App\Modules\Features\Requests\FeatureUpdateRequest;
+use App\Modules\Platforms\Requests\PlatformStoreRequest;
+use App\Modules\Subscriptions\Services\SubscriptionService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PlatformController extends Controller
 {
@@ -25,10 +29,27 @@ class PlatformController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PlatformStoreRequest $request)
+    public function store(PlatformStoreRequest $request, SubscriptionService $subscriptionService)
     {
-        $platformData = $this->service->create($request->validated(), $request->user());
-        return ApiResponse::created($platformData);
+        $platformData = $request->validated();
+        $monthes = BillingCycle::From($platformData['billing_cycle'])->monthes();
+
+        DB::transaction(function () use ($platformData, $monthes, $subscriptionService) {
+            
+            $platform = $this->service->create($platformData, Auth::id());
+            
+            $subscriptionService->subscripe(
+                $platform, 
+                $monthes, 
+                $platformData['features']
+            );
+
+        });
+                    
+        return ApiResponse::created(data: [
+                'dashboard' => $this->service->platformUrl($platformData['domain'])
+            ],
+        );
     }
 
     /**
@@ -53,9 +74,13 @@ class PlatformController extends Controller
     {
     }
 
-    public function isDomainAvailable($domain)
+    public function isDomainAvailable(Request $request)
     {
-        return match(PlatformService::domainExists($domain)) {
+        $request->validate([
+            'domain' => 'required|string|max:100'
+        ]);
+
+        return match(PlatformService::domainExists($request['domain'])) {
             true => ApiResponse::message(__('apiMessages.notavailable'), Response::HTTP_UNPROCESSABLE_ENTITY),
             false => ApiResponse::message(__('apiMessages.available'))
         };

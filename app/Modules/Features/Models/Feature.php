@@ -16,25 +16,10 @@ class Feature extends Model
         'icon',
         'price',
         'active',
-        'type'
     ];
 
     public $translatedAttributes = [
         'name',
         'description'
     ];
-
-    protected $casts = [
-        'type' => FeatureType::class
-    ];
-
-    public function subscriptions(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            Subscription::class,
-            'subscription_features'
-        )
-        ->withPivot(['price'])
-        ->withTimestamps();
-    }
 }

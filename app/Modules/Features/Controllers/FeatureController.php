@@ -24,7 +24,7 @@ class FeatureController extends Controller
     public function index()
     {        
         $features = Cache::rememberForever('features', function () {
-            return $this->service->getAll();
+            return $this->service->getAll(true);
         });
         return ApiResponse::success(FeatureResource::collection($features));
     }

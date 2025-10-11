@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call(FeatureSeeder::class);
-        $this->call(PlanSeeder::class);
         $this->call(ThemeSeeder::class);
         $this->call(RoleSeeder::class);
     }
