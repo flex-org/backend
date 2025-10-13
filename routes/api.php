@@ -37,3 +37,10 @@ Route::get('run/{key}/{ckey}/{class?}', function($key, $ckey, $class = null) {
         echo nl2br($output);
     }
 });
+
+
+
+
+route::get('/osama', function(){
+    echo "hello osama";
+});
