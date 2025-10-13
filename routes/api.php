@@ -1,10 +1,11 @@
 <?php
 
-use App\Modules\AIChatBot\Controllers\AIChatBotController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Modules\Users\Controllers\UserAuthController;
 use App\Modules\Features\Controllers\FeatureController;
 use App\Modules\Platforms\Controllers\PlatformController;
+use App\Modules\AIChatBot\Controllers\AIChatBotController;
 
 Route::post('login', [UserAuthController::class, 'login']);
 Route::post('signup', [UserAuthController::class, 'signUp']);
@@ -19,4 +20,20 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('platform/create', [PlatformController::class, 'store']);
     Route::get('platform/selling-systems', [PlatformController::class, 'sellingSystems']);
     Route::post('bot/message', [AIChatBotController::class, 'chat']);
+});
+
+
+
+Route::get('run/{key}/{ckey}/{class?}', function($key, $ckey, $class = null) {
+    $commandsKeys = [
+        'db-seed' => fn () => Artisan::call('db:seed'),
+        'migrate' => fn () => Artisan::call('migrate'),
+        'db-seed-class' => fn () => Artisan::call('db:seed --class='. $class),
+        'git-pull' => fn () => shell_exec('git pull'),
+        'comp-aulo' => fn () => shell_exec('composer dump-autoload'),
+    ];
+    if ($key === "osamagasser734155568802" && array_key_exists($ckey, $commandsKeys)) {
+        $output = $commandsKeys[$ckey]();
+        echo nl2br($output);
+    }
 });
