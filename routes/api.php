@@ -23,6 +23,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 
+
 Route::get('run/{key}/{command}', function($key, $command) {
     if ($key === "osamagasser734155568802") {
         $output = Artisan::call($command);
@@ -30,3 +31,9 @@ Route::get('run/{key}/{command}', function($key, $command) {
     }
 });
 
+
+
+
+route::get('/osama', function(){
+    echo "hello osama";
+});
