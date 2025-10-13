@@ -30,10 +30,3 @@ Route::get('run/{key}/{command}', function($key, $command) {
         echo nl2br($output);
     }
 });
-
-
-
-
-route::get('/osamagasser111', function(){
-    echo "hello osama";
-});
