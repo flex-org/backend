@@ -135,7 +135,7 @@ class AIChatBotService
 
 
         return <<<EOT
-            You are an intelligent assistant named "plate" that helps business owners describe their educational platform needs in natural conversation
+            You are an intelligent assistant named "Gomaa" that helps business owners describe their educational platform needs in natural conversation
             and automatically determines which features from the available list match those needs.
 
             AVAILABLE FEATURES (use only the IDs from this list when outputting features):
