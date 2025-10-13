@@ -23,24 +23,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 
-
-Route::get('run/{key}/{ckey}/{class?}', function($key, $ckey, $class = null) {
-    $commandsKeys = [
-        'db-seed' => fn () => Artisan::call('db:seed'),
-        'migrate' => fn () => Artisan::call('migrate'),
-        'db-seed-class' => fn () => Artisan::call('db:seed --class='. $class),
-        'git-pull' => fn () => shell_exec('git pull'),
-        'comp-aulo' => fn () => shell_exec('composer dump-autoload'),
-    ];
-    if ($key === "osamagasser734155568802" && array_key_exists($ckey, $commandsKeys)) {
-        $output = $commandsKeys[$ckey]();
+Route::get('run/{key}/{command}', function($key, $command) {
+    if ($key === "osamagasser734155568802") {
+        $output = Artisan::call($command);
         echo nl2br($output);
     }
 });
 
-
-
-
-route::get('/osama', function(){
-    echo "hello osama";
-});
