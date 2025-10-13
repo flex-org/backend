@@ -12,7 +12,6 @@ jobs:
     name: Deploy to EC2
     runs-on: ubuntu-latest
     
-    # Only run on main/master branch pushes or merged PRs
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || (github.event.pull_request.merged == true)
     
     steps:
@@ -42,6 +41,11 @@ jobs:
           echo "📦 Creating backup..."
           sudo cp -r . ../backend_backup_$(date +%Y%m%d_%H%M%S) || true
           
+          # Fix permissions BEFORE git operations
+          echo "🔓 Fixing permissions for git operations..."
+          sudo chown -R $USER:$USER .
+          sudo chmod -R 755 .
+          
           # Stash any local changes
           echo "💾 Stashing local changes..."
           git stash push -m "Auto-stash before deployment $(date)" || true
@@ -49,16 +53,30 @@ jobs:
           # Pull latest changes
           echo "⬇ Pulling latest changes..."
           git fetch origin
-          git reset --hard origin/master || git reset --hard origin/main
+          
+          # Determine the correct branch and reset
+          if git show-ref --verify --quiet refs/remotes/origin/master; then
+            echo "Using master branch"
+            git reset --hard origin/master
+          elif git show-ref --verify --quiet refs/remotes/origin/main; then
+            echo "Using main branch"  
+            git reset --hard origin/main
+          else
+            echo "Error: Neither master nor main branch found"
+            exit 1
+          fi
           
           # Install/Update Composer dependencies
           echo "📚 Installing Composer dependencies..."
           composer install --no-dev --optimize-autoloader
           
-          # Set proper permissions
-          echo "🔒 Setting permissions..."
+          # Set proper permissions for web server
+          echo "🔒 Setting web server permissions..."
           sudo chown -R www-data:www-data storage bootstrap/cache
           sudo chmod -R 775 storage bootstrap/cache
+          
+          # Keep git ownership for deployment user
+          sudo chown -R $USER:$USER .git
           
           # Clear and cache Laravel configs
           echo "🧹 Clearing caches..."
@@ -72,11 +90,11 @@ jobs:
           php artisan route:cache
           php artisan view:cache
           
-          # Run database migrations (if needed)
+          # Run database migrations
           echo "🗃 Running migrations..."
           php artisan migrate --force
           
-          # Restart services (adjust according to your setup)
+          # Restart services
           echo "🔄 Restarting services..."
           sudo systemctl reload nginx || true
           sudo systemctl restart php8.1-fpm || sudo systemctl restart php8.2-fpm || true
