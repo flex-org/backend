@@ -34,6 +34,6 @@ Route::get('run/{key}/{command}', function($key, $command) {
 
 
 
-route::get('/osama', function(){
+route::get('/osamagasser', function(){
     echo "hello osama";
 });
