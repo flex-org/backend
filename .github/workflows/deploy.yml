@@ -37,10 +37,10 @@ jobs:
           # Navigate to project directory
           cd ${{ secrets.EC2_PATH }}
           
-          # Backup current state
-          echo "📦 Creating backup..."
-          sudo cp -r . ../backend_backup_$(date +%Y%m%d_%H%M%S) || true
-          
+          echo "📦 Creating (and overwriting) single backup..."
+          sudo rm -rf ../backend_backup || true
+          sudo cp -r . ../backend_backup
+
           # Fix permissions BEFORE git operations
           echo "🔓 Fixing permissions for git operations..."
           sudo chown -R $USER:$USER .
