@@ -70,29 +70,40 @@ jobs:
           echo "📚 Installing Composer dependencies..."
           composer install --no-dev --optimize-autoloader
           
-          # Set proper permissions for web server
-          echo "🔒 Setting web server permissions..."
+          # Set proper permissions for Laravel directories BEFORE running artisan commands
+          echo "🔒 Setting Laravel permissions..."
           sudo chown -R www-data:www-data storage bootstrap/cache
           sudo chmod -R 775 storage bootstrap/cache
+          
+          # Ensure log directory exists and has proper permissions
+          sudo mkdir -p storage/logs
+          sudo chown -R www-data:www-data storage/logs
+          sudo chmod -R 775 storage/logs
           
           # Keep git ownership for deployment user
           sudo chown -R $USER:$USER .git
           
-          # Clear and cache Laravel configs
+          # Clear caches (these don't require writing to files)
           echo "🧹 Clearing caches..."
-          php artisan config:clear
-          php artisan cache:clear
-          php artisan route:clear
-          php artisan view:clear
+          sudo -u www-data php artisan config:clear || php artisan config:clear
+          sudo -u www-data php artisan cache:clear || php artisan cache:clear
+          sudo -u www-data php artisan route:clear || php artisan route:clear
+          sudo -u www-data php artisan view:clear || php artisan view:clear
           
+          # Cache configurations (run as www-data to avoid permission issues)
           echo "💾 Caching configurations..."
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
+          sudo -u www-data php artisan config:cache || php artisan config:cache
+          sudo -u www-data php artisan route:cache || php artisan route:cache
+          sudo -u www-data php artisan view:cache || php artisan view:cache
           
           # Run database migrations
           echo "🗃 Running migrations..."
-          php artisan migrate --force
+          sudo -u www-data php artisan migrate --force || php artisan migrate --force
+          
+          # Final permission fix
+          echo "🔧 Final permission adjustments..."
+          sudo chown -R www-data:www-data storage bootstrap/cache
+          sudo chmod -R 775 storage bootstrap/cache
           
           # Restart services
           echo "🔄 Restarting services..."
