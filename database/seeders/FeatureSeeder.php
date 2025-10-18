@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Modules\Features\Models\DynamicFeatures;
 use Illuminate\Database\Seeder;
 use App\Modules\Features\Models\Feature;
 use Illuminate\Support\Arr;

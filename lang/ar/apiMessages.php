@@ -13,5 +13,9 @@ return [
     'bulk_deleted_successfully' => 'تم حذف :count طلب بنجاح',
     'ids_required' => 'يجب إدخال معرف طلب واحد على الأقل',
     'join' => '',
+
+    'platform' => [
+        'userHasPlatform' => 'المستخدم يمتلك منصة بالفعل ولا يمكنه إنشاء منصة أخرى.',
+    ],
 ];
 

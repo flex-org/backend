@@ -24,6 +24,7 @@ return [
     'billing_cycle' => [
         'yearly' => 'Yearly', 
         'monthly' => 'Monthly', 
+        'quarterly' => 'Quarterly'
     ],
 
     'selling_system' => [

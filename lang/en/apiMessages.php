@@ -13,5 +13,9 @@ return [
     'ids_required' => 'You must provide at least one order id',
     'join' => 'joined successfully',
     'available' => 'available',
-    'notavailable' => 'not available'
+    'notavailable' => 'not available',
+
+    'platform' => [
+        'userHasPlatform' => 'The user already has a platform and cannot create another one.',
+    ],
 ];

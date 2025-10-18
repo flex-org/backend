@@ -25,12 +25,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        
+        Route::middleware(['api'])
+            ->prefix('api/v1')
+            ->group(base_path('routes/V1/api.php'));
+
+        Route::middleware(['api'])
+            ->prefix('api/v1/enums')
+            ->group(base_path('routes/V1/enums.php'));
+        
         Route::middleware(['api', 'domainExists'])
-            ->prefix('api/platform')
-            ->group(base_path('routes/platform.php'));
+            ->prefix('api/v1/platform')
+            ->group(base_path('routes/V1/platform.php'));
 
         Route::middleware(['api', 'domainExists'])
-            ->prefix('api/dashboard')
-            ->group(base_path('routes/dashboard.php'));
+            ->prefix('api/v1/dashboard')
+            ->group(base_path('routes/V1/dashboard.php'));
     }
 }

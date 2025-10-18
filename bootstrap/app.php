@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\V1\SetLocale;
 use Illuminate\Foundation\Application;
-use App\Http\Middleware\CheckDomainAccess;
-use App\Http\Middleware\CheckDomainExistances;
+use App\Http\Middleware\V1\CheckDomainAccess;
+use App\Http\Middleware\V1\CheckDomainExistances;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Laravel\Sanctum\Http\Middleware\CheckAbilities;
