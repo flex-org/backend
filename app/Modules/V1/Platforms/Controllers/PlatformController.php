@@ -27,6 +27,7 @@ class PlatformController extends Controller
     }
 
     /**
+     * 
      * Store a newly created resource in storage.
      */
     public function store(PlatformStoreRequest $request, SubscriptionService $subscriptionService)
