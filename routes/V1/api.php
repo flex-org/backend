@@ -11,6 +11,7 @@ use App\Modules\V1\Platforms\Controllers\PlatformController;
 use App\Modules\V1\AIChatBot\Controllers\AIChatBotController;
 
 Route::post('login', [UserAuthController::class, 'login']);
+
 Route::post('signup', [UserAuthController::class, 'signUp']);
 Route::post('resend-otp', [UserAuthController::class, 'resendOtp']);
 Route::post('verify-email', [UserAuthController::class, 'verifyEmail'])
