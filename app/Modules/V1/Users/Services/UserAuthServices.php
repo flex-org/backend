@@ -78,7 +78,7 @@ class UserAuthServices extends AuthWithVerifiedRegisterServices
             ]);
         }
         
-        $user = $user->update(['email_verified_at' => now()]);
+        $user->update(['email_verified_at' => now()]);
         $user->tokens()->delete();
         $this->abilities = ['verified'];
         $token = $this->generateToken($user, 'User Token');
@@ -88,7 +88,6 @@ class UserAuthServices extends AuthWithVerifiedRegisterServices
         );
         
         return ApiResponse::success($data, __('auth.verified_success'));
-
     }
 
     public function resendOtp(array $data, OtpService $otpService)
