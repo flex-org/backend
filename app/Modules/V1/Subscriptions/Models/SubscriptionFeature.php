@@ -1,9 +1,9 @@
 <?php
+namespace App\Modules\V1\Subscriptions\Models;
 
-namespace App\Modules\Subscriptions\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Modules\Features\Models\Feature;
+use App\Modules\V1\Features\Models\Feature;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SubscriptionFeature extends Model
