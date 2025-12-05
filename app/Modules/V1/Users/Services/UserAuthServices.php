@@ -59,6 +59,7 @@ class UserAuthServices extends AuthWithVerifiedRegisterServices
             return ApiResponse::success([
                 'token' => $token,
                 'user' => $user
+                
             ], __('auth.loggedIn'));
 
         });
