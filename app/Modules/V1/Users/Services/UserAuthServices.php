@@ -26,13 +26,13 @@ class UserAuthServices extends AuthWithVerifiedRegisterServices
             $token = $this->generateToken($user, 'user');
             $data = $this->respondWithToken($user, $token);
             return ApiResponse::apiFormat([
-                'data' => $data
-            ],
-            'use the code that sent to your mail to verify your accout',
-            Response::HTTP_FORBIDDEN
-        );
-    }
-    
+                    'data' => $data
+                ],
+                'use the code that sent to your mail to verify your accout',
+                Response::HTTP_FORBIDDEN
+            );
+        }
+
         $this->abilities = ['verified'];
         $token = $this->generateToken($user, 'user');
 
@@ -40,7 +40,7 @@ class UserAuthServices extends AuthWithVerifiedRegisterServices
 
         return ApiResponse::success($data, __('auth.loggedIn'));
     }
-    
+
     public function signUp(array $userData, OtpService $otpService)
     {
         return DB::transaction(function () use($userData, $otpService) {
@@ -55,12 +55,12 @@ class UserAuthServices extends AuthWithVerifiedRegisterServices
             // $user->notify(new SendOtp($code));
             $this->abilities = ['not-verified'];
             $token = $this->generateToken($user, 'User Token');
-            
+
             return ApiResponse::success([
                 'token' => $token,
                 'user' => $user
             ], __('auth.loggedIn'));
-             
+
         });
     }
 
@@ -71,22 +71,22 @@ class UserAuthServices extends AuthWithVerifiedRegisterServices
                 'email' => __('auth.already_verified')
             ]);
         }
-        
+
         if (!$otpService->validate($user->email, $data['otp'])) {
             return ApiResponse::validationError([
                 'otp' => __('auth.invalid_otp')
             ]);
         }
-        
+
         $user = $user->update(['email_verified_at' => now()]);
         $user->tokens()->delete();
         $this->abilities = ['verified'];
         $token = $this->generateToken($user, 'User Token');
         $data = $this->respondWithToken(
             $user,
-            $token, 
+            $token,
         );
-        
+
         return ApiResponse::success($data, __('auth.verified_success'));
 
     }
