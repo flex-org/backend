@@ -38,7 +38,7 @@ class UserAuthServices extends AuthWithVerifiedRegisterServices
 
         $data = $this->respondWithToken($user, $token);
 
-        return ApiResponse::success($data, __('auth.loggedIn'));
+        return ApiResponse::success($data, __('auth.login_success'));
     }
 
     public function signUp(array $userData, OtpService $otpService)
@@ -59,8 +59,7 @@ class UserAuthServices extends AuthWithVerifiedRegisterServices
             return ApiResponse::success([
                 'token' => $token,
                 'user' => $user
-                
-            ], __('auth.loggedIn'));
+            ], __('auth.verification_sent'));
 
         });
     }
