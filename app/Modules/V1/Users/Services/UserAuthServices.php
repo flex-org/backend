@@ -88,7 +88,6 @@ class UserAuthServices extends AuthWithVerifiedRegisterServices
         );
 
         return ApiResponse::success($data, __('auth.verified_success'));
-
     }
 
     public function resendOtp(array $data, OtpService $otpService)

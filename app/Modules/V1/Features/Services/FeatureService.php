@@ -1,7 +1,6 @@
 <?php 
 namespace App\Modules\V1\Features\Services;
 
-use App\Modules\V1\Features\Enums\FeatureType;
 use App\Traits\V1\HasTranslation;
 use App\Modules\V1\Features\Models\Feature;
 use Illuminate\Support\Arr;

@@ -17,13 +17,11 @@ class AIChatBotService
 {
     private $usageLimit;
     private GenerativeModel $model;
-    private FeatureService $featureService;
-
-    public function __construct()
+    
+    public function __construct(private FeatureService $featureService)
     {
         $client = Gemini::client(config('gemini.api_key'));
         $this->usageLimit = config('gemini.daily_chat_tokens_limit');
-        $this->featureService = new FeatureService();
 
         $systemInstruction = Content::parse(
             part: $this->modelInstructions(),
