@@ -17,42 +17,42 @@ use Illuminate\Support\Facades\DB;
 class PlatformController extends Controller
 {
     public function __construct(public PlatformService $service) {}
-    
+
     /**
      * Display a listing of the resource.
      */
     public function index()
-    {        
+    {
     }
 
     /**
-     * 
+     *
      * Store a newly created resource in storage.
      */
     public function store(PlatformStoreRequest $request, SubscriptionService $subscriptionService)
     {
         if (Auth::user()->platform()) {
             return ApiResponse::message(
-                __('apiMessages.platform.userHasPlatform'), 
+                __('apiMessages.platform.userHasPlatform'),
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
         $platformData = $request->validated();
-        $monthes = BillingCycle::From($platformData['billing_cycle'])->monthes();
+        $months = BillingCycle::From($platformData['billing_cycle'])->monthes();
 
-        DB::transaction(function () use ($platformData, $monthes, $subscriptionService) {
-            
+        DB::transaction(function () use ($platformData, $months, $subscriptionService) {
+
             $platform = $this->service->create($platformData, Auth::id());
-            
-            $subscriptionService->subscripe(
-                $platform, 
-                $monthes, 
+
+            $subscriptionService->subscribe(
+                $platform,
+                $months,
                 $platformData
             );
 
         });
-                    
+
         return ApiResponse::created(data: [
                 'dashboard' => $this->service->platformUrl($platformData['domain'])
             ],

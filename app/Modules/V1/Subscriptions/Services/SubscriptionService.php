@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace App\Modules\V1\Subscriptions\Services;
 
 use App\Modules\V1\Features\Models\Feature;
@@ -10,7 +10,7 @@ use App\Modules\V1\Subscriptions\Enums\SubscriptionStatus;
 class SubscriptionService
 {
 
-    public function subscripe($platform, $months, $platformData)
+    public function subscribe($platform, $months, $platformData)
     {
         $features = Feature::whereIn('id', $platformData['features'])->get();
         $price = $this->subscriptionPriceCalculation($months, $features, $platformData);
@@ -45,7 +45,7 @@ class SubscriptionService
         return Subscription::create([
             'platform_id'     => $platform->id,
             'started_at'      => now()->addDays(3),
-            'renew_at'        => now()->addMonth($months),
+            'renew_at'        => now()->addMonths($months),
             'duration_months' => $months,
             'price'           => $price,
             'status'          => SubscriptionStatus::FREETRIAL,

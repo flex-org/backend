@@ -29,7 +29,8 @@ class PlatformStoreRequest extends FormRequest
             'domain' => 'required|string|unique:platforms',
             'features' => 'nullable|array',
             'features.*' => 'required|integer|exists:features,id',
-            'selling_system' => ['required','string', new Enum(PlatformSellingSystem::class)],
+            'selling_system' => ['required','array'],
+            'selling_system.*' => ['required', 'integer', 'exists:selling_systems,id'],
             'storage' => 'required|integer|min:1',
             'capacity' => 'required|integer|min:1',
         ];

@@ -3,10 +3,10 @@ namespace App\Modules\V1\Platforms\Enums;
 
 enum PlatformSellingSystem: string
 {
-    case CACOS = 'cacos';
-    case CACO  = 'caco';
-    case CAS   = 'cas';
-    case COS   = 'cos';
+    // case CACOS = 'cacos';
+    // case CACO  = 'caco';
+    // case CAS   = 'cas';
+    // case COS   = 'cos';
     case CA    = 'ca';
     case CO    = 'co';
     case S     = 's';

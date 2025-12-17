@@ -3,13 +3,14 @@
 namespace App\Modules\V1\Platforms\Models;
 
 use App\Models\V1\User;
-use App\Modules\V1\Themes\Models\Theme;
+use App\Models\V1\SellingSystem;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
+use App\Modules\V1\Themes\Models\Theme;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\V1\Dashboard\Admins\Models\Admin;
-use App\Modules\V1\Subscriptions\Models\Subscription;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Modules\V1\Subscriptions\Models\Subscription;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Modules\V1\Platforms\Enums\PlatformSellingSystem;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -20,10 +21,10 @@ class Platform extends Model
 
     protected $guard_name = 'sanctum';
     protected $fillable = [
-        'user_id', 
-        'theme_id', 
-        'domain', 
-        'storage', 
+        'user_id',
+        'theme_id',
+        'domain',
+        'storage',
         'capacity',
         'selling_system'
     ];
@@ -52,6 +53,16 @@ class Platform extends Model
         return $this->hasMany(Subscription::class);
     }
 
+    public function sellingSystems(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            SellingSystem::class,
+            'platform_selling_systems',
+            'platform_id',
+            'selling_system_id'
+        );
+    }
+
     public static function boot()
     {
         parent::boot();
@@ -62,7 +73,7 @@ class Platform extends Model
             $platform->themes()->attach(
                 Theme::whereNull('price')->pluck('id')
             );
-            
+
             Admin::create([
                 'domain' => $platform->domain,
                 'name' => $user->name,
