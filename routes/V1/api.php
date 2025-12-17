@@ -1,6 +1,7 @@
 <?php
 
 use App\Facades\ApiResponse;
+use App\Http\Middleware\V1\SetLocale;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Modules\V1\Utilities\enums\BillingCycle;

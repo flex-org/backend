@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('platform_theme', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Platform::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Theme::class)->constrained()->cascadeOnDelete();
+            $table->foreignId('platform_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('theme_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

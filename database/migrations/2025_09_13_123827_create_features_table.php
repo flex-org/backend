@@ -22,7 +22,7 @@ return new class extends Migration
 
         Schema::create('feature_translations', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Feature::class)->constrained()->cascadeOnDelete();
+            $table->foreignId('feature_id')->constrained()->cascadeOnDelete();
             $table->char('locale',3)->index();
             $table->string('name');
             $table->text('description')->nullable();

@@ -18,8 +18,8 @@ return new class extends Migration
     {
         Schema::create('platforms', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Theme::class)->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('theme_id')->constrained()->cascadeOnDelete();
             $table->string('domain')->unique();
             $table->integer('storage');
             $table->integer('capacity');

@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Modules\Features\Models\DynamicFeatures;
 use Illuminate\Database\Seeder;
-use App\Modules\Features\Models\Feature;
+use App\Modules\V1\Features\Models\Feature;
 use Illuminate\Support\Arr;
 use Spatie\Permission\Models\Permission;
 
@@ -16,12 +16,12 @@ class DynamicFeatureSeeder extends Seeder
             [
                 'name' => 'storage',
                 'quantity' => 100,
-                'price' => 80, 
+                'price' => 80,
             ],
             [
                 'name' => 'capacity',
-                'quantity' => 2000, 
-                'price' => 100, 
+                'quantity' => 2000,
+                'price' => 100,
             ],
         ];
 

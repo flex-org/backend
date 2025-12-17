@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Modules\Features\Models\DynamicFeatures;
 use Illuminate\Database\Seeder;
-use App\Modules\Features\Models\Feature;
+use App\Modules\V1\Features\Models\Feature;
 use Illuminate\Support\Arr;
 use Spatie\Permission\Models\Permission;
 

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Platform::class)->constrained()->cascadeOnDelete();
+            $table->foreignId('platform_id')->constrained()->cascadeOnDelete();
             $table->date('started_at');
             $table->date('renew_at');
             $table->tinyInteger('duration_months')->default(1);

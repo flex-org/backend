@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('subscription_features', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Subscription::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Feature::class)->constrained()->cascadeOnDelete();
+            $table->foreignId('subscription_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('feature_id')->constrained()->cascadeOnDelete();
             $table->decimal('price', 10, 2);
             $table->timestamps();
         });
