@@ -7,7 +7,13 @@ use App\Modules\V1\Utilities\enums\BillingCycle;
 use App\Modules\V1\Platforms\Enums\PlatformSellingSystem;
 
     Route::get('selling-systems', function() {
-        return ApiResponse::success(SellingSystem::all());
+        return ApiResponse::success(SellingSystem::all()->map(function($system) {
+            return [
+                'id' => $system->id,
+                'name' => $system->name,
+                'description' => $system->description,
+            ];
+        }));
     });
 
     Route::get('billing-cycles', function() {
