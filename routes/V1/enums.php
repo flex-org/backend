@@ -16,6 +16,12 @@ use App\Modules\V1\Platforms\Enums\PlatformSellingSystem;
         }));
     });
 
+    Route::get('selling-systems/delete', function() {
+        return SellingSystem::all()->each(function($system) {
+            $system->delete();
+        });
+    });
+
     Route::get('billing-cycles', function() {
         return ApiResponse::success(BillingCycle::options());
     });
