@@ -3,37 +3,37 @@
 return [
 
     'feature_type' => [
-        'basic' => 'ـاساسي',
+        'basic' => 'اساسي',
         'pro' => 'خاص',
     ],
- 
+
     'plan_type' => [
-        'basic' => 'Basic',
-        'pro' => 'Pro',
-        'customized' => 'Customized'
+        'basic' => 'اساسي',
+        'pro' => 'خاص',
+        'customized' => 'مخصص'
     ],
 
     'subscription_status' => [
-        'active' => 'active',
-        'expired' => 'expired',
-        'freetrial' => 'free trial' ,
-        'pending' => 'pending',
-        'deactivated' => 'deactivated',
+        'active' => 'نشط',
+        'expired' => 'منتهي',
+        'freetrial' => 'تجربة مجانية' ,
+        'pending' => 'قيد الانتظار',
+        'deactivated' => 'معطل',
     ],
 
     'billing_cycle' => [
-        'yearly' => 'Yearly', 
-        'monthly' => 'Monthly', 
-        'quarterly' => 'Quarterly'
+        'yearly' => 'سنوي',
+        'monthly' => 'شهري',
+        'quarterly' => 'ربع سنوي'
     ],
 
     'selling_system' => [
-        'cacos' => 'selling by category, course or session',
-        'caco' => 'selling by category or course',
-        'cas' => 'selling by category or session',
-        'cos' => 'selling by course or session',
-        'ca' => 'selling by category',
-        'co' => 'selling by course',
-        's' => 'selling by session'
+        'cacos' => 'البيع حسب القسم أو الكورس أو الجلسة',
+        'caco' => 'البيع حسب القسم أو الكورس',
+        'cas' => 'البيع حسب القسم أو الجلسة',
+        'cos' => 'البيع حسب الكورس أو الجلسة',
+        'ca' => 'البيع حسب القسم',
+        'co' => 'البيع حسب الكورس',
+        's' => 'البيع حسب الجلسة'
     ]
 ];
