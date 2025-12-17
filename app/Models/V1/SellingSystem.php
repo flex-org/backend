@@ -8,5 +8,9 @@ use Astrotomic\Translatable\Translatable;
 class SellingSystem extends Model
 {
     use Translatable;
-    public $translatedAttributes = ['name', 'description'];
+    protected $fillable = [];
+    public $translatedAttributes = [
+        'name',
+        'description'
+    ];
 }

@@ -7,5 +7,10 @@ use Astrotomic\Translatable\Translatable;
 
 class SellingSystemTranslation extends Model
 {
-    public $fillable = ['name', 'description'];
+    public $timestamps = false;
+
+    public $fillable = [
+        'name',
+        'description'
+    ];
 }

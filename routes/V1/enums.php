@@ -54,9 +54,15 @@ use App\Modules\V1\Platforms\Enums\PlatformSellingSystem;
                 ],
             ],
         ];
-        foreach ($systems as $systemData) {
-            $system = new SellingSystem();
-            $system->fill($systemData);
+        foreach ($systems as $data) {
+            $translations = Arr::pull($data, 'translations');
+
+            $system = SellingSystem::create($data);
+
+            foreach ($translations as $locale => $translation) {
+                $system->translateOrNew($locale)->name = $translation['name'];
+                $system->translateOrNew($locale)->description = $translation['description'];
+            }
             $system->save();
         }
         return ApiResponse::success('Selling systems added successfully');
