@@ -31,7 +31,7 @@ class PlatformController extends Controller
      */
     public function store(PlatformStoreRequest $request, SubscriptionService $subscriptionService)
     {
-        if (Auth::user()->platform()) {
+        if (Auth::user()->platform) {
             return ApiResponse::message(
                 __('apiMessages.platform.userHasPlatform'),
                 Response::HTTP_UNPROCESSABLE_ENTITY
