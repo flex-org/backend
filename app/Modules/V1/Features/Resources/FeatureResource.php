@@ -17,8 +17,9 @@ class FeatureResource extends JsonResource
         return [
             'id' => $this->id,
             'icon' => $this->icon,
-            'price' => $this->price,
-            'active' => $this->active,
+            'price' => (int)$this->price,
+            'active' => (bool) $this->active,
+            'default' => (bool) $this->default,
             'name' => $this->name,
             'description' => $this->description,
             // 'translations' => $this->when(request()->is('api/dashboard/categories/*'), fn () =>

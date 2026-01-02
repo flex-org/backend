@@ -12,7 +12,7 @@ use App\Modules\V1\Dashboard\Admins\Models\Admin;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Modules\V1\Subscriptions\Models\Subscription;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Modules\V1\Platforms\Enums\PlatformSellingSystem;
+use App\Modules\V1\Platforms\Enums\SellingSystemEnum;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Platform extends Model
@@ -30,7 +30,7 @@ class Platform extends Model
     ];
 
     public $casts = [
-        'selling_system' => PlatformSellingSystem::class
+        'selling_system' => SellingSystemEnum::class
     ];
 
     public function user(): BelongsTo

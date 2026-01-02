@@ -9,7 +9,6 @@ use App\Modules\V1\Subscriptions\Enums\SubscriptionStatus;
 
 class SubscriptionService
 {
-
     public function subscribe($platform, $months, $platformData)
     {
         $features = Feature::whereIn('id', $platformData['features'])->get();
@@ -48,7 +47,7 @@ class SubscriptionService
             'renew_at'        => now()->addMonths($months),
             'duration_months' => $months,
             'price'           => $price,
-            'status'          => SubscriptionStatus::FREETRIAL,
+            'status'          => SubscriptionStatus::FREE_TRIAL,
         ]);
     }
 

@@ -5,7 +5,7 @@ namespace App\Modules\V1\Platforms\Requests;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Modules\V1\Utilities\enums\BillingCycle;
-use App\Modules\V1\Platforms\Enums\PlatformSellingSystem;
+use App\Modules\V1\Platforms\Enums\SellingSystemEnum;
 
 class PlatformStoreRequest extends FormRequest
 {
@@ -31,8 +31,9 @@ class PlatformStoreRequest extends FormRequest
             'features.*' => 'required|integer|exists:features,id',
             'selling_system' => ['required','array'],
             'selling_system.*' => ['required', 'integer', 'exists:selling_systems,id'],
-            'storage' => 'required|integer|min:1',
-            'capacity' => 'required|integer|min:1',
+            'storage' => 'required|integer|min:20|max:1024',
+            'capacity' => 'required|integer|min:100,max:10000',
+            'mobile_app' => 'required|boolean',
         ];
     }
 }

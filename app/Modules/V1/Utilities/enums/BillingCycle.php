@@ -17,6 +17,7 @@ enum BillingCycle: string
         return array_map(fn ($type) => [
             'value' => $type->value,
             'label' => $type->label(),
+            'discount' => $type->discount(),
         ], self::cases());
     }
 
@@ -26,6 +27,15 @@ enum BillingCycle: string
             self::MONTHLY => 1,
             self::QUARTERLY => 3,
             self::YEARLY => 12,
+        };
+    }
+
+    public function discount()
+    {
+        return match($this) {
+            self::MONTHLY => 0,
+            self::QUARTERLY => 3,
+            self::YEARLY => 10,
         };
     }
 }

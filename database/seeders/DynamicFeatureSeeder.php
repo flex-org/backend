@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Modules\V1\Features\Enums\DynamicFeaturesValue;
 use App\Modules\V1\Features\Models\DynamicFeatures;
 use Illuminate\Database\Seeder;
 
@@ -11,14 +12,19 @@ class DynamicFeatureSeeder extends Seeder
     {
         $dynamicFeatures = [
             [
-                'name' => 'storage',
-                'quantity' => 100,
-                'price' => 80,
+                'name' => DynamicFeaturesValue::STORAGE,
+                'quantity' => 1,
+                'price' => 2,
             ],
             [
-                'name' => 'capacity',
-                'quantity' => 2000,
-                'price' => 100,
+                'name' => DynamicFeaturesValue::CAPACITY,
+                'quantity' => 10,
+                'price' => 0.75,
+            ],
+            [
+                'name' => DynamicFeaturesValue::MOBILEAPP,
+                'quantity' => 1,
+                'price' => 350,
             ],
         ];
 

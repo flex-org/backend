@@ -13,10 +13,12 @@ class FeatureSeeder extends Seeder
     public function run(): void
     {
         $features = [
+            // basic features
             [
                 'icon' => 'fa-book',
-                'price' => 0,
+                'price' => 50,
                 'active' => true,
+                'default' => true,
                 'translations' => [
                     'en' => [
                         'name' => 'Courses',
@@ -29,9 +31,123 @@ class FeatureSeeder extends Seeder
                 ],
             ],
             [
-                'icon' => 'fa-layer-group',
-                'price' => 0,
+                'icon' => 'fa-users',
+                'price' => 50,
                 'active' => true,
+                'default' => true,
+                'translations' => [
+                    'en' => [
+                        'name' => 'Students Management',
+                        'description' => 'Manage students, enrollment and access permissions',
+                    ],
+                    'ar' => [
+                        'name' => 'إدارة الطلاب',
+                        'description' => 'إدارة الطلاب وتسجيلهم وصلاحيات الوصول',
+                    ],
+                ],
+            ],
+            [
+                'icon' => 'fa-folder-open',
+                'price' => 50,
+                'active' => true,
+                'default' => true,
+                'translations' => [
+                    'en' => [
+                        'name' => 'Content Management',
+                        'description' => 'Upload and organize videos, files and learning materials',
+                    ],
+                    'ar' => [
+                        'name' => 'تنظيم المحتوى',
+                        'description' => 'رفع وتنظيم الفيديوهات والملفات والمواد التعليمية',
+                    ],
+                ],
+            ],
+            [
+                'icon' => 'fa-user-shield',
+                'price' => 50,
+                'active' => true,
+                'default' => true,
+                'translations' => [
+                    'en' => [
+                        'name' => 'Roles & Permissions',
+                        'description' => 'Control access levels for admins, instructors and students',
+                    ],
+                    'ar' => [
+                        'name' => 'الصلاحيات والأدوار',
+                        'description' => 'التحكم في صلاحيات الأدمن والطلاب',
+                    ],
+                ],
+            ],
+            [
+                'icon' => 'fa-lock',
+                'price' => 50,
+                'active' => true,
+                'default' => true,
+                'translations' => [
+                    'en' => [
+                        'name' => 'Basic Security',
+                        'description' => 'Secure access with authentication and encrypted connections',
+                    ],
+                    'ar' => [
+                        'name' => 'الأمان الأساسي',
+                        'description' => 'تأمين الدخول باستخدام التحقق والتشفير',
+                    ],
+                ],
+            ],
+            [
+                'icon' => 'fa-chart-line',
+                'price' => 50,
+                'active' => true,
+                'default' => true,
+                'translations' => [
+                    'en' => [
+                        'name' => 'Basic Reports',
+                        'description' => 'View basic statistics about students and courses',
+                    ],
+                    'ar' => [
+                        'name' => 'تقارير أساسية',
+                        'description' => 'عرض إحصائيات أساسية عن الطلاب والكورسات',
+                    ],
+                ],
+            ],
+            [
+                'icon' => 'fa-cog',
+                'price' => 50,
+                'active' => true,
+                'default' => true,
+                'translations' => [
+                    'en' => [
+                        'name' => 'Platform Settings',
+                        'description' => 'Manage platform settings and branding',
+                    ],
+                    'ar' => [
+                        'name' => 'إعدادات المنصة',
+                        'description' => 'التحكم في إعدادات المنصة والهوية',
+                    ],
+                ],
+            ],
+            [
+                'icon' => 'fa-credit-card',
+                'price' => 50,
+                'active' => true,
+                'default' => true,
+                'translations' => [
+                    'en' => [
+                        'name' => 'Online Payments',
+                        'description' => 'Accept online payments, manage subscriptions and track transactions',
+                    ],
+                    'ar' => [
+                        'name' => 'المدفوعات الإلكترونية',
+                        'description' => 'قبول المدفوعات الإلكترونية، إدارة الاشتراكات وتتبع العمليات المالية',
+                    ],
+                ],
+            ],
+            // paid features
+            [
+                'icon' => 'fa-layer-group',
+                'price' => 50,
+                'active' => true,
+                'default' => false,
                 'translations' => [
                     'en' => [
                         'name' => 'Categories',
@@ -44,24 +160,10 @@ class FeatureSeeder extends Seeder
                 ],
             ],
             [
-                'icon' => 'fa-video',
-                'price' => 0,
-                'active' => true,
-                'translations' => [
-                    'en' => [
-                        'name' => 'Sessions',
-                        'description' => 'Schedule and manage sessions within courses',
-                    ],
-                    'ar' => [
-                        'name' => 'الجلسات',
-                        'description' => 'جدولة وإدارة الجلسات داخل الكورسات',
-                    ],
-                ],
-            ],
-            [
                 'icon' => 'fa-file-alt',
-                'price' => 0,
+                'price' => 75,
                 'active' => true,
+                'default' => false,
                 'translations' => [
                     'en' => [
                         'name' => 'Assignments',
@@ -75,8 +177,9 @@ class FeatureSeeder extends Seeder
             ],
             [
                 'icon' => 'fa-question-circle',
-                'price' => 0,
+                'price' => 50,
                 'active' => true,
+                'default' => false,
                 'translations' => [
                     'en' => [
                         'name' => 'Question Bank',
@@ -90,8 +193,9 @@ class FeatureSeeder extends Seeder
             ],
             [
                 'icon' => 'fa-clipboard-check',
-                'price' => 0,
+                'price' => 75,
                 'active' => true,
+                'default' => false,
                 'translations' => [
                     'en' => [
                         'name' => 'Quizzes & Exams',
@@ -105,8 +209,9 @@ class FeatureSeeder extends Seeder
             ],
             [
                 'icon' => 'fa-bullhorn',
-                'price' => 0,
+                'price' => 50,
                 'active' => true,
+                'default' => false,
                 'translations' => [
                     'en' => [
                         'name' => 'Announcements',
@@ -120,8 +225,9 @@ class FeatureSeeder extends Seeder
             ],
             [
                 'icon' => 'fa-broadcast-tower',
-                'price' => 0,
+                'price' => 200,
                 'active' => true,
+                'default' => false,
                 'translations' => [
                     'en' => [
                         'name' => 'Live Sessions',
@@ -135,8 +241,9 @@ class FeatureSeeder extends Seeder
             ],
             [
                 'icon' => 'fa-certificate',
-                'price' => 0,
+                'price' => 75,
                 'active' => true,
+                'default' => false,
                 'translations' => [
                     'en' => [
                         'name' => 'Certificates',
@@ -150,8 +257,9 @@ class FeatureSeeder extends Seeder
             ],
             [
                 'icon' => 'fa-calendar-alt',
-                'price' => 0,
+                'price' => 50,
                 'active' => true,
+                'default' => false,
                 'translations' => [
                     'en' => [
                         'name' => 'Calendar',
@@ -163,23 +271,7 @@ class FeatureSeeder extends Seeder
                     ],
                 ],
             ],
-            [
-                'icon' => 'fa-mobile-alt',
-                'price' => 199.99,
-                'active' => true,
-                'translations' => [
-                    'en' => [
-                        'name' => 'Mobile App',
-                        'description' => 'Get a dedicated mobile application for your platform',
-                    ],
-                    'ar' => [
-                        'name' => 'تطبيق موبايل',
-                        'description' => 'احصل على تطبيق موبايل مخصص لمنصتك',
-                    ],
-                ],
-            ],
         ];
-
 
         foreach ($features as $data) {
             $translations = Arr::pull($data, 'translations');

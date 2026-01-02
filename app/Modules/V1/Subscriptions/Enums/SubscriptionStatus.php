@@ -5,7 +5,7 @@ enum SubscriptionStatus: string
 {
     case ACTIVE = 'active';
     case EXPIRED = 'expired';
-    case FREETRIAL = 'freetrial';
+    case FREE_TRIAL = 'free_trial';
     case PENDING = 'pending';
     case DEACTIVATED = 'deactivated';
 

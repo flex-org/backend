@@ -23,10 +23,9 @@ return new class extends Migration
             $table->string('domain')->unique();
             $table->integer('storage');
             $table->integer('capacity');
-            $table->string('selling_system');
+            $table->boolean('has_mobile_app')->default(false);
             $table->timestamps();
         });
-
     }
 
     /**

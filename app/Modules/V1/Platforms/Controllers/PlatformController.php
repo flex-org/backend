@@ -42,15 +42,12 @@ class PlatformController extends Controller
         $months = BillingCycle::From($platformData['billing_cycle'])->monthes();
 
         DB::transaction(function () use ($platformData, $months, $subscriptionService) {
-
             $platform = $this->service->create($platformData, Auth::id());
-
             $subscriptionService->subscribe(
                 $platform,
                 $months,
                 $platformData
             );
-
         });
 
         return ApiResponse::created(data: [

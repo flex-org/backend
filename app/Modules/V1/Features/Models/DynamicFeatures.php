@@ -12,9 +12,8 @@ class DynamicFeatures extends Model
         'price',
     ];
 
-
-    public function quantityPrice($value)
+    public function quantityPrice($quantity)
     {
-        return $this->price * max(1, $value / $this->quantity);
+        return $this->price * max(1, $quantity / $this->quantity);
     }
 }

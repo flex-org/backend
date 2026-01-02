@@ -13,14 +13,7 @@ return new class extends Migration
     {
         Schema::create('selling_systems', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
-        });
-        Schema::create('selling_system_translations', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('selling_system_id')->constrained()->cascadeOnDelete();
-            $table->string('locale')->index();
-            $table->string('name');
-            $table->string('description');
+            $table->string('system');
             $table->timestamps();
         });
     }

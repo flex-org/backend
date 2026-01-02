@@ -2,15 +2,13 @@
 
 namespace App\Models\V1;
 
+use App\Modules\V1\Platforms\Enums\SellingSystemEnum;
 use Illuminate\Database\Eloquent\Model;
-use Astrotomic\Translatable\Translatable;
 
 class SellingSystem extends Model
 {
-    use Translatable;
-    protected $fillable = [];
-    public $translatedAttributes = [
-        'name',
-        'description'
+    protected $fillable = ['system'];
+    protected $casts  = [
+        'system' => SellingSystemEnum::class,
     ];
 }
