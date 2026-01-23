@@ -20,7 +20,7 @@ class PlatformInitializationController extends Controller
 
     public function getInitData()
     {
-        if(!is_null(Auth::user()->platformInitialization))
+        if(is_null(Auth::user()->platformInitialization))
             throw new AccessDeniedException(__('messages.not_authorized'));
         $initData =  $this->service->getPlatformInitData(Auth::user());
         return ApiResponse::success($initData);
