@@ -1,21 +1,17 @@
 <?php
 
-namespace App\Modules\V1\Platforms\Requests;
+namespace App\Modules\V1\Platforms\Requests\Initialization;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Modules\V1\Utilities\enums\BillingCycle;
-use App\Modules\V1\Platforms\Enums\SellingSystemEnum;
 
-class PlatformStoreRequest extends FormRequest
+class IsDomainAvailableRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return !$this->user()->platform;
+        return (bool)($this->user()->platformInitialization);
     }
 
     /**
@@ -26,7 +22,7 @@ class PlatformStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'billing_cycle' => ['required', 'string', new Enum(BillingCycle::class)],
+            'domain' => 'required|string|max:100|unique:platforms,domain',
         ];
     }
 }

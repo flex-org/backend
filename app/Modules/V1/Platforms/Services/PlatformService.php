@@ -6,11 +6,6 @@ use App\Modules\V1\Themes\Models\Theme;
 
 class PlatformService
 {
-    static function domainExists($domain)
-    {
-        return Platform::where('domain', $domain)->exists();
-    }
-
     function create($platformData, $user_id)
     {
         $platform = Platform::create([
@@ -21,13 +16,12 @@ class PlatformService
             'capacity' => $platformData['capacity'],
         ]);
 
-        $platform->sellingSystems()->attach($platformData['selling_system']);
+        $platform->sellingSystems()->attach($platformData['selling_systems']);
 
         return $platform;
     }
-
     function platformUrl($domain)
     {
-        return  'https://'.'.'.$domain.'.'.env('FROTN_APP_URL')."/dashboard/apperance";
+        return  'https://'.$domain.'.'.env('FRONTEND_URL')."/dashboard/apperance";
     }
 }

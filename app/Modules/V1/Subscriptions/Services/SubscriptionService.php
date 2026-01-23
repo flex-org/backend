@@ -11,7 +11,7 @@ class SubscriptionService
 {
     public function subscribe($platform, $months, $platformData)
     {
-        $features = Feature::whereIn('id', $platformData['features'])->get();
+        $features = collect($platformData['features']);
         $price = $this->subscriptionPriceCalculation($months, $features, $platformData);
 
         $subscription = $this->createSubscription($price, $platform, $months);
@@ -56,12 +56,12 @@ class SubscriptionService
         $subscription->features()->attach(
             $features->pluck('id')
             ->mapWithKeys(fn ($id) => [
-                $id => ['price' => $features->firstWhere('id', $id)->price]
+                $id => ['price' => $features->firstWhere('id', $id)['price']]
             ])
         );
 
         $permissions = $features->map(fn($feature) =>
-             'feature-' . $feature->id
+             'feature-' . $feature['id']
         )->toArray();
 
         $platform->givePermissionTo($permissions);

@@ -2,12 +2,12 @@
 
 namespace App\Models\V1;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
 use App\Modules\V1\Platforms\Models\Platform;
+use App\Modules\V1\Platforms\Models\PlatformInitialization;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -53,6 +53,11 @@ class User extends Authenticatable
     public function platform()
     {
         return $this->hasOne(Platform::class);
+    }
+
+    public function platformInitialization()
+    {
+        return $this->hasOne(PlatformInitialization::class);
     }
 
 }

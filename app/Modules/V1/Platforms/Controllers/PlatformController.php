@@ -3,14 +3,16 @@
 namespace App\Modules\V1\Platforms\Controllers;
 
 use App\Facades\ApiResponse;
-use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
-use App\Modules\V1\Utilities\enums\BillingCycle;
-use App\Modules\V1\Platforms\Services\PlatformService;
 use App\Modules\V1\Features\Requests\FeatureUpdateRequest;
+use App\Modules\V1\Platforms\Requests\Initialization\SavePlatformFeaturesRequest;
 use App\Modules\V1\Platforms\Requests\PlatformStoreRequest;
+use App\Modules\V1\Platforms\Services\InitializePlatformService;
+use App\Modules\V1\Platforms\Services\PlatformService;
 use App\Modules\V1\Subscriptions\Services\SubscriptionService;
+use App\Modules\V1\Utilities\enums\BillingCycle;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -29,29 +31,24 @@ class PlatformController extends Controller
      *
      * Store a newly created resource in storage.
      */
-    public function store(PlatformStoreRequest $request, SubscriptionService $subscriptionService)
+    public function store(PlatformStoreRequest $request, SubscriptionService $subscriptionService, InitializePlatformService $initializer)
     {
-        if (Auth::user()->platform) {
-            return ApiResponse::message(
-                __('apiMessages.platform.userHasPlatform'),
-                Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        }
-
         $platformData = $request->validated();
+        $platformInitData = $initializer->getPlatformInitData(Auth::user());
         $months = BillingCycle::From($platformData['billing_cycle'])->monthes();
 
-        DB::transaction(function () use ($platformData, $months, $subscriptionService) {
-            $platform = $this->service->create($platformData, Auth::id());
+        DB::transaction(function () use ($months, $subscriptionService, $platformInitData, $initializer) {
+            $platform = $this->service->create($platformInitData, Auth::id());
             $subscriptionService->subscribe(
                 $platform,
                 $months,
-                $platformData
+                $platformInitData
             );
+            $initializer->delete(Auth::user());
         });
 
         return ApiResponse::created(data: [
-                'dashboard' => $this->service->platformUrl($platformData['domain'])
+                'dashboard' => $this->service->platformUrl($platformInitData['domain'])
             ],
         );
     }
@@ -78,16 +75,17 @@ class PlatformController extends Controller
     {
     }
 
-    public function isDomainAvailable(Request $request)
-    {
-        $request->validate([
-            'domain' => 'required|string|max:100'
-        ]);
+//    public function isDomainAvailable(Request $request)
+//    {
+//        $request->validate([
+//            'domain' => 'required|string|max:100'
+//        ]);
+//
+//        return match(PlatformService::domainExists($request['domain'])) {
+//            true => ApiResponse::message(__('apiMessages.notavailable'), Response::HTTP_UNPROCESSABLE_ENTITY),
+//            false => ApiResponse::message(__('apiMessages.available'))
+//        };
+//    }
 
-        return match(PlatformService::domainExists($request['domain'])) {
-            true => ApiResponse::message(__('apiMessages.notavailable'), Response::HTTP_UNPROCESSABLE_ENTITY),
-            false => ApiResponse::message(__('apiMessages.available'))
-        };
-    }
 
 }

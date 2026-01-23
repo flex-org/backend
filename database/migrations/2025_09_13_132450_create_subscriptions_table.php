@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('renew_at');
             $table->tinyInteger('duration_months')->default(1);
             $table->decimal('price', 10, 2);
-            $table->string('status')->default('free_trial'); // free_trial, active, pending, expired, deactivated
+            $table->string('status')->default('free_trial'); // free_trial, active, pending, expired, deactivated, draft
             $table->timestamps();
         });
     }

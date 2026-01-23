@@ -14,13 +14,13 @@ class FeatureController extends Controller
 {
     public function __construct(public FeatureService $service)
     {
-        
+
     }
     /**
      * Display a listing of the resource.
      */
     public function index()
-    {        
+    {
         $features = Cache::rememberForever('features', function () {
             return $this->service->getAll(true);
         });
@@ -33,6 +33,14 @@ class FeatureController extends Controller
             return $this->service->getAll(true);
         });
         return ApiResponse::success(FeatureResource::collection($features));
+    }
+
+    public function getDynamicFeatures()
+    {
+        $dynamicfeatures = Cache::rememberForever('dynamicFeatures', function () {
+            return $this->service->getDynamic();
+        });
+        return ApiResponse::success($dynamicfeatures);
     }
 
     /**

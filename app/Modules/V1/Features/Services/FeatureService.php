@@ -1,6 +1,7 @@
-<?php 
+<?php
 namespace App\Modules\V1\Features\Services;
 
+use App\Modules\V1\Features\Models\DynamicFeatures;
 use App\Traits\V1\HasTranslation;
 use App\Modules\V1\Features\Models\Feature;
 use Illuminate\Support\Arr;
@@ -14,6 +15,11 @@ class FeatureService
         return Feature::when($active, function($query){
             return $query->where('active', true);
         })->get();
+    }
+
+    public function getDynamic()
+    {
+        return DynamicFeatures::select(['name', 'quantity', 'price'])->get();
     }
 
     public function findById(int $id, $active = true)
