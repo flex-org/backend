@@ -39,7 +39,7 @@ return Application::configure(basePath: dirname(__DIR__))
             return ApiResponse::unauthorized('auth.unauthorized');
         });
         $exceptions->render(function (AuthenticationException $e, $request) {
-            return ApiResponse::unauthorized(__('auth.invalid_credentials'));
+            return ApiResponse::unauthorized('auth.unauthorized');
         });
 
         $exceptions->render(function (AccessDeniedHttpException | AuthorizationException $e, $request) {
