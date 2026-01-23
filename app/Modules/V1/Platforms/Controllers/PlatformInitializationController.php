@@ -4,15 +4,12 @@ namespace App\Modules\V1\Platforms\Controllers;
 
 use App\Facades\ApiResponse;
 use App\Http\Controllers\Controller;
-use App\Models\V1\User;
 use App\Modules\V1\Platforms\Requests\Initialization\IsDomainAvailableRequest;
 use App\Modules\V1\Platforms\Requests\Initialization\SavePlatformFeaturesRequest;
 use App\Modules\V1\Platforms\Requests\Initialization\SavingPlatformSystemsRequest;
 use App\Modules\V1\Platforms\Services\InitializePlatformService;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\Finder\Exception\AccessDeniedException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PlatformInitializationController extends Controller
 {
@@ -21,7 +18,7 @@ class PlatformInitializationController extends Controller
     public function getInitData()
     {
         if(is_null(Auth::user()->platformInitialization))
-            throw new AccessDeniedException(__('messages.not_authorized'));
+            throw new AccessDeniedHttpException(__('messages.not_authorized'));
         $initData =  $this->service->getPlatformInitData(Auth::user());
         return ApiResponse::success($initData);
     }
