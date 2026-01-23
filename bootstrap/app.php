@@ -36,7 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (UnauthorizedException $e, $request) {
-            return ApiResponse::unauthorized();
+            return ApiResponse::unauthorized('auth.unauthorized');
         });
         $exceptions->render(function (AuthenticationException $e, $request) {
             return ApiResponse::unauthorized(__('auth.invalid_credentials'));
