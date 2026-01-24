@@ -16,9 +16,10 @@ class PlatformInitResource extends JsonResource
     public function toArray(Request $request): array
     {
         $initData = $this['initData'];
+        dd($initData, $initData->features);
         return [
             'features' => FeatureResource::collection(($this['features'])),
-            'selected_features' => $this->when($initData->features, FeatureResource::collection(collect($initData->features)), []),
+            'selected_features' => $this->when($initData->features, FeatureResource::collection($initData->features), []),
             'selling_systems' => $initData?->selling_systems ?? [],
             'domain' => $initData?->domain ?? '',
             'capacity' => (int) $initData?->capacity ?? 100,
