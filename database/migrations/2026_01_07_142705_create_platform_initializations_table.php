@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('platform_initializations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->json('features')->nullable(); //
             $table->string('domain')->nullable();
-            $table->integer('capacity')->nullable();
-            $table->integer('storage')->nullable();
-            $table->json('selling_systems')->nullable();
-            $table->boolean('mobile_app')->nullable();
+            $table->integer('capacity')->default(100);
+            $table->integer('storage')->default(50);
+            $table->json('selling_systems')->default([])->nullable();
+            $table->boolean('mobile_app')->default(false);
+            $table->integer('step')->default(0);
             $table->timestamps();
         });
     }
