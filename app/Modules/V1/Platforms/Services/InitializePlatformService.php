@@ -13,8 +13,10 @@ class InitializePlatformService
     public function getPlatformInitData($user)
     {
         return PlatformInitialization::with('features')
-            ->where('user_id', $user->id)
-            ->first();
+            ->firstOrCreate(
+                ['user_id' => $user->id],
+                ['step' => 0]
+            );
     }
 
     public function delete($user)
