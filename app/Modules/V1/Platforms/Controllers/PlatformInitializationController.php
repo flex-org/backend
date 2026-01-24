@@ -39,7 +39,7 @@ class PlatformInitializationController extends Controller
     {
         $platformFeatures = $request->validated();
         $features =  $this->service->storeOrUpdatePlatformFeatures($platformFeatures['features'], Auth::id());
-        return ApiResponse::success($features);
+        return ApiResponse::message('success');
     }
 
     public function initPlatformDomain(IsDomainAvailableRequest $request)
