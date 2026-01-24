@@ -12,16 +12,9 @@ class InitializePlatformService
 
     public function getPlatformInitData($user)
     {
-        $platformInitData = $user->platformInitialization;
-
-        return [
-            'features' => $platformInitData?->features ?? [],
-            'selling_systems' => $platformInitData?->selling_systems ?? [],
-            'domain' => $platformInitData?->domain ?? '',
-            'capacity' => (int) $platformInitData?->capacity ?? 100,
-            'storage' => (int) $platformInitData?->storage ?? 20,
-            'mobile_app' => (bool) $platformInitData?->mobile_app ?? false,
-        ];
+        return PlatformInitialization::with('features')
+            ->where('user_id', $user->id)
+            ->first();
     }
 
     public function delete($user)
@@ -29,7 +22,7 @@ class InitializePlatformService
         $platformInitData = $user->platformInitialization->delete();
     }
 
-    public function storeOrUpdatePlatformFeatures($features, $userId)
+    public function storeOrUpdatePlatformFeatures($featuresIds, $userId)
     {
         $features = Feature::select([
             'id',
@@ -38,20 +31,26 @@ class InitializePlatformService
             'active',
             'default'
         ])
-        ->whereIn('id', $features)
-        ->get();
-         PlatformInitialization::UpdateOrCreate([
+        ->where('active', true)
+        ->whereIn('id', $featuresIds)
+        ->pluck('id')
+        ->toArray();
+
+        $platform = PlatformInitialization::firstOrCreate([
             'user_id' => $userId,
         ],[
-            'features' => $features,
+            'step' => 1,
         ]);
-
-        return $features;
+        $platform->features()->sync($features);
+        return $platform;
     }
 
     public function UpdatePlatformDomain($domain, $user)
     {
-        $data = ['domain' => $domain];
+        $data = [
+            'step' => 3,
+            'domain' => $domain
+        ];
         $user->platformInitialization->update($data);
         return $data;
     }
@@ -59,6 +58,7 @@ class InitializePlatformService
     public function UpdatePlatformSystems($systems, $user)
     {
         $data = [
+            'step' => 2,
             'capacity' => (int) $systems['capacity'],
             'storage' => (int) $systems['storage'],
             'mobile_app' => (bool) $systems['mobile_app'],

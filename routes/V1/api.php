@@ -15,19 +15,21 @@ Route::post('resend-otp', [UserAuthController::class, 'resendOtp']);
 Route::post('verify-email', [UserAuthController::class, 'verifyEmail'])
     ->middleware(['auth:sanctum', 'abilities:not-verified']);
 
-Route::get('/features', [FeatureController::class, 'getActiveFeatures']);
-Route::get('/dynamic-features', [FeatureController::class, 'getDynamicFeatures']);
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::delete('logout', [UserAuthController::class, 'logout']);
-    Route::post('/domain-available', [PlatformInitializationController::class, 'isDomainAvailable']);
-    Route::prefix('platform')->group(function (){
-        Route::post('initial/features', [PlatformInitializationController::class, 'initFeatures']);
-        Route::post('initial/domain', [PlatformInitializationController::class, 'initPlatformDomain']);
-        Route::post('initial/systems', [PlatformInitializationController::class, 'initPlatformSystems']);
-        Route::get('initial', [PlatformInitializationController::class, 'getInitData']);
-        Route::post('create', [PlatformController::class, 'store']);
+Route::group(['middleware' => ['locale']], function () {
+    Route::get('/features', [FeatureController::class, 'getActiveFeatures']);
+    Route::get('/dynamic-features', [FeatureController::class, 'getDynamicFeatures']);
+    Route::group(['middleware' => ['auth:sanctum', 'locale']], function () {
+        Route::delete('logout', [UserAuthController::class, 'logout']);
+        Route::post('/domain-available', [PlatformInitializationController::class, 'isDomainAvailable']);
+        Route::prefix('platform')->group(function (){
+            Route::post('initial/features', [PlatformInitializationController::class, 'initFeatures']);
+            Route::post('initial/domain', [PlatformInitializationController::class, 'initPlatformDomain']);
+            Route::post('initial/systems', [PlatformInitializationController::class, 'initPlatformSystems']);
+            Route::get('initial', [PlatformInitializationController::class, 'getInitData']);
+            Route::post('create', [PlatformController::class, 'store']);
+        });
+        Route::post('bot/message', [AIChatBotController::class, 'chat']);
     });
-    Route::post('bot/message', [AIChatBotController::class, 'chat']);
 });
 
 

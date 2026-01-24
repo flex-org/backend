@@ -4,9 +4,10 @@ namespace App\Modules\V1\Features\Controllers;
 
 use App\Facades\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Modules\V1\Features\Resources\FeatureResource;
 use Illuminate\Support\Facades\Cache;
 use App\Modules\V1\Features\Services\FeatureService;
-use App\Modules\V1\Features\Resources\FeatureResource;
+use App\Modules\V1\Features\Resources\PlatformInitResource;
 use App\Modules\V1\Features\Requests\FeatureStoreRequest;
 use App\Modules\V1\Features\Requests\FeatureUpdateRequest;
 
@@ -59,7 +60,7 @@ class FeatureController extends Controller
     public function show(string $id)
     {
         $feature = $this->service->findById($id);
-        return ApiResponse::success(new FeatureResource($feature));
+        return ApiResponse::success(new FeatureResource(feature));
     }
 
     /**

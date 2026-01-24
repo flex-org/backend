@@ -4,23 +4,31 @@ namespace App\Modules\V1\Platforms\Controllers;
 
 use App\Facades\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Modules\V1\Features\Services\FeatureService;
 use App\Modules\V1\Platforms\Requests\Initialization\IsDomainAvailableRequest;
 use App\Modules\V1\Platforms\Requests\Initialization\SavePlatformFeaturesRequest;
 use App\Modules\V1\Platforms\Requests\Initialization\SavingPlatformSystemsRequest;
+use App\Modules\V1\Platforms\Resources\PlatformInitResource;
 use App\Modules\V1\Platforms\Services\InitializePlatformService;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PlatformInitializationController extends Controller
 {
-    public function __construct(public InitializePlatformService $service) {}
+    public function __construct(
+        public InitializePlatformService $service,
+    ) {}
 
-    public function getInitData()
+    public function getInitData(FeatureService $features)
     {
-        if(is_null(Auth::user()->platformInitialization))
+        $user = Auth::user();
+        if(!is_null($user->platform))
             throw new AccessDeniedHttpException(__('messages.not_authorized'));
-        $initData =  $this->service->getPlatformInitData(Auth::user());
-        return ApiResponse::success($initData);
+        $data['initData'] = $this->service->getPlatformInitData($user);
+        $data['features'] = $features->getAll(true);
+        return ApiResponse::success(
+            new PlatformInitResource($data)
+        );
     }
     public function isDomainAvailable(IsDomainAvailableRequest $request)
     {
