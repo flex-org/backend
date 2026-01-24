@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('platform_initializations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->json('features')->nullable();
+            $table->json('features')->nullable(); //
             $table->string('domain')->nullable();
             $table->integer('capacity')->nullable();
             $table->integer('storage')->nullable();

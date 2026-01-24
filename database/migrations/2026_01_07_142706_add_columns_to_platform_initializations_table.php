@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('platform_initializations', function (Blueprint $table) {
+            $table->dropColumn('features');
             $table->integer('step')->nullable();
         });
     }
