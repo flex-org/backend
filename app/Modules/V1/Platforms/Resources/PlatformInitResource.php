@@ -18,7 +18,7 @@ class PlatformInitResource extends JsonResource
         $initData = $this['initData'];
         return [
             'features' => FeatureResource::collection(($this['features'])),
-            'selected_features' => $this->when($initData->features, FeatureResource::collection($initData->features), []),
+            'selected_features' => $this->when($initData->features, FeatureResource::collection(collect($initData->features)), []),
             'selling_systems' => $initData?->selling_systems ?? [],
             'domain' => $initData?->domain ?? '',
             'capacity' => (int) $initData?->capacity ?? 100,
