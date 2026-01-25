@@ -4,6 +4,7 @@ namespace App\Modules\V1\Platforms\Controllers;
 
 use App\Facades\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Models\V1\SellingSystem;
 use App\Modules\V1\Features\Services\FeatureService;
 use App\Modules\V1\Platforms\Requests\Initialization\IsDomainAvailableRequest;
 use App\Modules\V1\Platforms\Requests\Initialization\SavePlatformFeaturesRequest;
@@ -26,6 +27,13 @@ class PlatformInitializationController extends Controller
             throw new AccessDeniedHttpException(__('messages.not_authorized'));
         $data['initData'] = $this->service->getPlatformInitData($user);
         $data['features'] = $features->getAll(true);
+        $data['selling_systems'] = SellingSystem::all()->map(function($system) {
+            return [
+                'id' => $system->id,
+                'name' => $system->system->label(),
+                'description' => $system->system->description(),
+            ];
+        });
         return ApiResponse::success(
             new PlatformInitResource($data)
         );
