@@ -18,8 +18,8 @@ class DynamicFeatureSeeder extends Seeder
             ],
             [
                 'name' => DynamicFeaturesValue::CAPACITY,
-                'quantity' => 10,
-                'price' => 0.75,
+                'quantity' => 1,
+                'price' => 0.5,
             ],
             [
                 'name' => DynamicFeaturesValue::MOBILEAPP,

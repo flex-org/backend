@@ -4,6 +4,7 @@ namespace App\Modules\V1\Features\Controllers;
 
 use App\Facades\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Modules\V1\Features\Models\Feature;
 use App\Modules\V1\Features\Resources\FeatureResource;
 use Illuminate\Support\Facades\Cache;
 use App\Modules\V1\Features\Services\FeatureService;
@@ -41,7 +42,16 @@ class FeatureController extends Controller
         $dynamicfeatures = Cache::rememberForever('dynamicFeatures', function () {
             return $this->service->getDynamic();
         });
-        return ApiResponse::success($dynamicfeatures);
+        $data = $dynamicfeatures->mapWithKeys(function ($feature) {
+            return [
+                $feature->name => [
+                    'quantity' => 1,
+                    'price' => $feature->price,
+                ]
+            ];
+        });
+
+        return ApiResponse::success($data);
     }
 
     /**
