@@ -16,7 +16,7 @@ class PlatformService
             'capacity' => $platformData['capacity'],
         ]);
 
-        $platform->sellingSystems()->attach($platformData['selling_systems']);
+        $platform->sellingSystems()->attach(collect($platformData['selling_systems'])->pluck('id')->toArray());
 
         return $platform;
     }
