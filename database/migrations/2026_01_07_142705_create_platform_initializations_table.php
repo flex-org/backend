@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('storage')->default(50);
             $table->json('selling_systems')->default([])->nullable();
             $table->boolean('mobile_app')->default(false);
+            $table->integer('step')->default(0);
             $table->timestamps();
         });
     }

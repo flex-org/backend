@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('platform_initializations', function (Blueprint $table) {
-            $table->integer('step')->default(0);
         });
     }
 

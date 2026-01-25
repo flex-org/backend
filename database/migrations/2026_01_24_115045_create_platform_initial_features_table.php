@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('platform_initial_features', function (Blueprint $table) {
-            $table->foreignId('feature_id')->constrained();
-            $table->foreignId('platform_id')->constrained('platform_initializations');
+            $table->foreignId('feature_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('platform_id')->constrained('platform_initializations')->cascadeOnDelete();
             $table->unique(['feature_id', 'platform_id']);
         });
     }
