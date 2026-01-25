@@ -22,8 +22,8 @@ class PlatformInitResource extends JsonResource
             'selling_systems' => $this['selling_systems'],
             'selected_selling_systems' => collect($initData->selling_systems ?? [])->map(fn($system) => [
                 'id' => $system['id'] ?? null,
-                'name' => $system['name']?->label() ?? null,
-                'description' => $system['description']?->label() ?? null,
+                'name' => $system['system']?->label() ?? null,
+                'description' => $system['system']?->description() ?? null,
                 ]) ?? [],
             'domain' => $initData->domain ?? '',
             'capacity' => (int) ($initData->capacity ?? 100),
