@@ -64,7 +64,7 @@ class InitializePlatformService
             'capacity' => (int) $systems['capacity'],
             'storage' => (int) $systems['storage'],
             'mobile_app' => (bool) $systems['mobile_app'],
-            'selling_systems' => SellingSystem::select('id')->whereIn('id', $systems['selling_system'])->pluck('id')
+            'selling_systems' => SellingSystem::select('id','system')->whereIn('id', $systems['selling_system'])->get()
         ];
         $user->platformInitialization->update($data);
         return $data;

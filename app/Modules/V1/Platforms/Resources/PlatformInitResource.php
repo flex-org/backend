@@ -20,7 +20,11 @@ class PlatformInitResource extends JsonResource
             'features' => FeatureResource::collection(($this['features'])),
             'selected_features' => $this->when($initData->features, FeatureResource::collection($initData->features), []),
             'selling_systems' => $this['selling_systems'],
-            'selected_selling_systems' => $initData->selling_systems ?? [],
+            'selected_selling_systems' => $initData->selling_systems?->map(fn($system) => [
+                'id' => $system['id'] ?? null,
+                'name' => $system['name']?->label() ?? null,
+                'description' => $system['description']?->label() ?? null,
+                ]) ?? [],
             'domain' => $initData->domain ?? '',
             'capacity' => (int) ($initData->capacity ?? 100),
             'storage' => (int) ($initData->storage ?? 20),
