@@ -29,8 +29,8 @@ class AIChatBotController extends Controller
         );
         return ApiResponse::success(
             [
-                'user_message' => $data['message'],
-                'html' => $reply->html,
+                'user' => $data['message'],
+                'bot' => $reply->html,
                 'status' => $reply->status,
                 'features' => $reply->features,
             ]
