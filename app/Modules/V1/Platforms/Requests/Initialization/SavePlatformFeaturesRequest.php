@@ -11,7 +11,7 @@ class SavePlatformFeaturesRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return !(bool)$this->user()->platform;
+        return (is_null($this->user()->platform));
     }
 
     /**

@@ -12,6 +12,7 @@ use App\Modules\V1\Platforms\Requests\Initialization\SavingPlatformSystemsReques
 use App\Modules\V1\Platforms\Resources\PlatformInitResource;
 use App\Modules\V1\Platforms\Services\InitializePlatformService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\UnauthorizedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PlatformInitializationController extends Controller
@@ -24,7 +25,7 @@ class PlatformInitializationController extends Controller
     {
         $user = Auth::user();
         if(!is_null($user->platform))
-            throw new AccessDeniedHttpException(__('messages.not_authorized'));
+            throw new UnauthorizedException(__('messages.not_authorized'));
         $data['initData'] = $this->service->getPlatformInitData($user);
         $data['features'] = $features->getAll(true);
         $data['selling_systems'] = SellingSystem::all()->map(function($system) {
@@ -46,7 +47,7 @@ class PlatformInitializationController extends Controller
     public function initFeatures(SavePlatformFeaturesRequest $request)
     {
         $platformFeatures = $request->validated();
-        $features =  $this->service->storeOrUpdatePlatformFeatures($platformFeatures['features'], Auth::id());
+        $this->service->storeOrUpdatePlatformFeatures($platformFeatures['features'], Auth::id());
         return ApiResponse::message('success');
     }
 

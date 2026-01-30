@@ -11,7 +11,7 @@ class IsDomainAvailableRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return (bool)($this->user()->platformInitialization);
+        return (is_null($this->user()->platform));
     }
 
     /**

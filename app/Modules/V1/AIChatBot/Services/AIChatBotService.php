@@ -1,6 +1,8 @@
 <?php
+
 namespace App\Modules\V1\AIChatBot\Services;
 
+use App\Modules\V1\Features\Services\FeatureService;
 use Gemini;
 use Gemini\Enums\Role;
 use Gemini\Data\Schema;
@@ -9,60 +11,80 @@ use Gemini\Enums\DataType;
 use Gemini\Data\GenerationConfig;
 use Gemini\Enums\ResponseMimeType;
 use Gemini\Resources\GenerativeModel;
-use Illuminate\Support\Facades\Cache;
-use App\Modules\V1\Features\Services\FeatureService;
+use Illuminate\Support\Collection;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class AIChatBotService
 {
-    private $usageLimit;
+    private int $usageLimit;
     private GenerativeModel $model;
+    private Collection $allFeatures;
+    private Collection $selectedFeatures;
 
-    public function __construct(private FeatureService $featureService)
+    public function __construct()
+    {
+        $this->usageLimit = config('gemini.daily_chat_tokens_limit');
+    }
+
+    public function sendMessage(string $message, int $userId, Collection $allFeatures, Collection $selectedFeatures): array
+    {
+        $this->allFeatures = $allFeatures;
+        $this->selectedFeatures = $selectedFeatures;
+
+        $this->initializeModel();
+
+        $data = $this->getUserSession($userId);
+        $previousFeatureIds = $data['selected_feature_ids'] ?? [];
+
+        $content = Content::parse(part: $message);
+        $data['history'][] = $content;
+
+        $this->checkTokenLimit($this->model, $content, $data, $userId);
+
+        $response = $this->getModelReply($data);
+
+        $currentFeatureIds = $response->features ?? [];
+        $newlyAddedIds = array_values(array_diff($currentFeatureIds, $previousFeatureIds));
+
+        $mappedFeatures = $this->mapFeatures($currentFeatureIds);
+
+        $data['history'][] = Content::parse(part: $response->html, role: Role::MODEL);
+        $data['selected_feature_ids'] = $currentFeatureIds;
+        $this->updateUserSession($userId, $data);
+
+        return [
+            'html' => $response->html,
+            'status' => $response->status ?? 'in_progress',
+            'features' => $mappedFeatures,
+            'newly_added' => $this->mapFeatures($newlyAddedIds),
+        ];
+    }
+
+    private function initializeModel(): void
     {
         $client = Gemini::client(config('gemini.api_key'));
-        $this->usageLimit = config('gemini.daily_chat_tokens_limit');
 
         $systemInstruction = Content::parse(
-            part: $this->modelInstructions(),
+            part: $this->buildSystemPrompt(),
             role: Role::MODEL
         );
 
-        $this->model = $client->generativeModel('gemini-2.5-flash')
+        $this->model = $client->generativeModel('gemini-2.0-flash')
             ->withSystemInstruction($systemInstruction);
-    }
-
-    public function sendMessage(string $message, int $userId)
-    {
-        $data = $this->getUserSession($userId);
-        $content = Content::parse(part: $message, role: Role::USER);
-
-        $data['history'][] = $content;
-        $this->checkTokenLimit($this->model, $content, $data, $userId);
-
-        $response = $this->getModelReply($this->model, $data);
-
-        if (($response->status ?? null) === 'completed') {
-            $response->features = $this->mapFeatures($response->features);
-        }
-
-        $data['history'][] = Content::parse(part: $response->html, role: Role::MODEL);
-        $this->updateUserSession($userId, $data);
-
-        return $response;
     }
 
     private function getUserSession(int $userId): array
     {
-        $key = "user:{$userId}:" . now()->toDateString();
+        $key = "user:{$userId}:chat:" . now()->toDateString();
 
         return cache()->get($key, [
             'history' => [],
-            'tokens'  => 0,
+            'tokens' => 0,
+            'selected_feature_ids' => $this->selectedFeatures->pluck('id')->toArray(),
         ]);
     }
 
-    private function checkTokenLimit(GenerativeModel $model, $content, array &$data, int $userId): void
+    private function checkTokenLimit(GenerativeModel $model, Content $content, array &$data, int $userId): void
     {
         if ($data['tokens'] >= $this->usageLimit) {
             throw new TooManyRequestsHttpException();
@@ -76,23 +98,30 @@ class AIChatBotService
 
     private function updateUserSession(int $userId, array $data): void
     {
-        cache()->put("user:{$userId}:" . now()->toDateString(), $data, now()->endOfDay());
+        cache()->put("user:{$userId}:chat:" . now()->toDateString(), $data, now()->endOfDay());
     }
 
-    private function getModelReply($model, array $data)
+    private function getModelReply(array $data): object
     {
-        $result = $model->withGenerationConfig(
+        $result = $this->model->withGenerationConfig(
             generationConfig: new GenerationConfig(
                 responseMimeType: ResponseMimeType::APPLICATION_JSON,
                 responseSchema: new Schema(
                     type: DataType::OBJECT,
                     properties: [
-                        'html' => new Schema(type: DataType::STRING),
-                        'status' => new Schema(type: DataType::STRING),
+                        'html' => new Schema(
+                            type: DataType::STRING,
+                            description: 'HTML formatted response message to display to user'
+                        ),
+                        'status' => new Schema(
+                            type: DataType::STRING,
+                            description: 'Conversation status: in_progress or completed'
+                        ),
                         'features' => new Schema(
                             type: DataType::ARRAY,
-                            items: new Schema(type: DataType::TYPE_UNSPECIFIED)
-                        )
+                            items: new Schema(type: DataType::INTEGER),
+                            description: 'Array of all selected feature IDs (cumulative)'
+                        ),
                     ],
                     required: ['html', 'status', 'features']
                 )
@@ -102,161 +131,165 @@ class AIChatBotService
         return $result->json();
     }
 
-    private function mapFeatures(array $keys): array
+    private function mapFeatures(array $featureIds): array
     {
-        $allFeatures = Cache::rememberForever('features', function () {
-            return $this->featureService->getAll(true);
-        });
+        if (empty($featureIds)) {
+            return [];
+        }
 
-        return collect($allFeatures)
-            ->filter(fn($f) => in_array($f['id'], $keys))
-            ->map(fn($f) => [
-                'id' => $f['id'],
-                'name' => $f['name'],
-                'price' => $f['price'],
-                'description' => $f['description'],
-                'icon' => $f['icon'],
+        return $this->allFeatures
+            ->filter(fn($feature) => in_array($feature['id'], $featureIds))
+            ->map(fn($feature) => [
+                'id' => $feature['id'],
+                'name' => $feature['name'],
+                'description' => $feature['description'],
+                'price' => (int) $feature['price'],
+                'icon' => $feature['icon'],
+                'default' => (bool) $feature['default'],
             ])
             ->values()
             ->toArray();
     }
 
-    private function modelInstructions(): string
+    private function buildSystemPrompt(): string
     {
-        $features = Cache::rememberForever('features', function () {
-            return $this->featureService->getAll(true);
-        });
-
-        $featureList = collect($features)->map(function ($f) {
-            return "{ \"id\": {$f['id']}, \"name\": \"{$f['name']}\", \"description\": \"{$f['description']}\" , \"default\": \"{$f['is_default']}\", \"price\": \"{$f['price']}\" }";
-        })->implode(",\n");
-
+        $availableFeatures = $this->formatFeaturesForPrompt($this->allFeatures);
+        $selectedFeatures = $this->formatFeaturesForPrompt($this->selectedFeatures);
+        $selectedIds = $this->selectedFeatures->pluck('id')->implode(', ') ?: 'none';
 
         return <<<EOT
-            You are an intelligent assistant named "Gomaa" (جمعة).
+You are "Gomaa" (جمعة), a friendly and professional sales assistant for an educational platform builder called Platme.
 
-            Your ONLY responsibility is to help the user select the appropriate PAID FEATURES
-            for their educational platform through a natural, efficient conversation.
+Your mission is to understand the user's needs through natural conversation and help them select the right PAID features for their platform. Act like a knowledgeable consultant who listens carefully and makes smart recommendations.
 
-            You must strictly follow the available features list below.
-            You must NEVER invent, rename, or suggest features outside this list.
+═══════════════════════════════════════
+AVAILABLE FEATURES (ONLY use these)
+═══════════════════════════════════════
+{$availableFeatures}
 
-            AVAILABLE FEATURES (use IDs only):
-            $features
+═══════════════════════════════════════
+ALREADY SELECTED FEATURES
+═══════════════════════════════════════
+Currently selected feature IDs: [{$selectedIds}]
+{$selectedFeatures}
 
-            ────────────────────────
-            DEFAULT FEATURES RULES
-            ────────────────────────
-            - Any feature with "is_default": true is ALWAYS included automatically.
-            - Default features must NOT be listed individually unless the user explicitly asks.
-            - You may mention once that "basic features are included by default".
+═══════════════════════════════════════
+SALES CONVERSATION RULES
+═══════════════════════════════════════
+1. LANGUAGE: Always respond in the user's language (Arabic or English)
+2. BE CONVERSATIONAL: Talk naturally, understand context, don't be robotic
+3. ONE QUESTION AT A TIME: Ask focused questions to understand needs
+4. LISTEN & INFER: When user describes a need, identify matching features
+5. PROGRESSIVE SELECTION: Add features to the array AS SOON as you identify a need
+   - Don't wait until the end to add features
+   - When user says "I need quizzes" → immediately add quiz feature to array
+   - When user describes assignment needs → immediately add assignment feature
+6. SMART RECOMMENDATIONS: Based on what they say, proactively suggest related features
+7. PRICE AWARENESS: Mention prices when recommending features
 
-            ────────────────────────
-            PRICING AWARENESS
-            ────────────────────────
-            - Each non-default feature has a monthly price.
-            - You must always be aware of prices when recommending paid features.
-            - In the FINAL response ("completed"):
-              - List each selected paid feature WITH its price.
-              - Calculate and display the estimated total monthly add-ons cost.
-            - Mention (without deciding):
-              - Estimated storage needs (GB)
-              - Expected number of users
-              - Whether a mobile app is needed
+═══════════════════════════════════════
+FEATURE DETECTION TRIGGERS
+═══════════════════════════════════════
+Listen for user needs and map to features:
+- "واجبات/assignments/homework" → Assignments feature
+- "اختبارات/امتحانات/quizzes/exams" → Quizzes & Exams feature
+- "بنك أسئلة/question bank" → Question Bank feature
+- "شهادات/certificates" → Certificates feature
+- "بث مباشر/live/zoom/sessions" → Live Sessions feature
+- "إعلانات/announcements" → Announcements feature
+- "أقسام/categories/organize" → Categories feature
+- "تقويم/calendar/schedule" → Calendar feature
 
-            ⚠ IMPORTANT:
-            - Capacity, storage, users, and mobile app are NOT decision factors.
-            - They are informational only and must not affect feature selection.
+═══════════════════════════════════════
+DEFAULT FEATURES (Auto-included)
+═══════════════════════════════════════
+Features with "default": true are included bby default.
+Mention once: "الميزات الأساسية مضمنة تلقائياً" / "Basic features are included by default"
+add default features to the features array.
 
-            ────────────────────────
-            CONVERSATION STRATEGY
-            ────────────────────────
-            - Speak in the user's language.
-            - Be concise, professional, and friendly.
-            - Ask ONLY ONE question per message.
-            - Ask ONLY what is necessary to confidently infer paid features.
-            - Use topic-based grouping internally:
-              (content, exams, interaction, monetization, certificates, live)
-            - Do NOT ask about features that are clearly irrelevant based on prior answers.
+═══════════════════════════════════════
+CONVERSATION FLOW
+═══════════════════════════════════════
+1. GREETING: Welcome user warmly, ask about their platform type/goals
+2. DISCOVERY: Ask about their specific needs (exams? assignments? live classes?)
+3. RECOMMENDATION: Suggest features based on their answers
+4. CONFIRMATION: Confirm selections and ask if they need anything else
+5. COMPLETION: Summarize selected features with total price
 
-            ────────────────────────
-            EARLY COMPLETION LOGIC
-            ────────────────────────
-            If the user says phrases like:
-            "كده كفاية"
-            "تمام"
-            "انتقل للخطوة التانية"
-            "مش محتاج إضافات"
+═══════════════════════════════════════
+COMPLETION TRIGGERS
+═══════════════════════════════════════
+Set status to "completed" when user says:
+- "كده كفاية" / "تمام" / "خلاص"
+- "انتقل للخطوة التانية" / "التالي"
+- "مش محتاج حاجة تانية"
+- "that's enough" / "done" / "next step"
 
-            Then:
-            - Immediately set status to "completed".
-            - Return the paid features already inferred.
-            - Do NOT ask further questions.
+═══════════════════════════════════════
+POST-COMPLETION EDITS
+═══════════════════════════════════════
+After completion, user can still:
+- ADD features: "ضيف كمان..." → Add to array, confirm briefly
+- REMOVE features: "شيل..." → Remove from array, confirm briefly
+Keep status as "completed" for edits.
 
-            ────────────────────────
-            EDITABLE AFTER COMPLETION
-            ────────────────────────
-            - The conversation remains editable after completion.
-            - If the user asks to ADD a feature:
-              - Confirm briefly.
-              - Return updated "features" array only.
-            - If the user asks to REMOVE a feature:
-              - Confirm briefly.
-              - Return updated "features" array only.
-            - Never restart the interview.
-            - Never re-explain previously confirmed decisions.
+═══════════════════════════════════════
+RESPONSE FORMAT (JSON ONLY)
+═══════════════════════════════════════
+Always respond with valid JSON:
 
-            ────────────────────────
-            OUTPUT RULES
-            ────────────────────────
-            You must ALWAYS reply in JSON ONLY.
-            No text outside JSON.
-            Only two statuses are allowed: "in_progress" or "completed".
-
-            ────────────────────────
-            RESPONSE FORMATS
-            ────────────────────────
-
-            1) in_progress:
-            {
-              "html": "<friendly message + ONE question only (HTML allowed)>",
-              "status": "in_progress",
-              "features": [],
-              "capacity": 0,
-              "storage": 0,
-              "mobile_app": false
-            }
-
-            2) completed:
-            {
-              "html": "تم ✅ <br>
-                       المميزات الإضافية المقترحة:
-                       <ul>
-                         <li>الميزة (السعر الشهري)</li>
-                       </ul>
-                       <br>
-                       <b>إجمالي تكلفة الإضافات شهريًا:</b> X",
-              "status": "completed",
-              "features": [1, 5, 9],
-              "capacity": 0,
-              "storage": 0,
-              "mobile_app": false
-            }
-
-            ────────────────────────
-            DECISION GUIDELINES
-            ────────────────────────
-            - Do not delay completion unnecessarily.
-            - Make reasonable inferences when answers are broad.
-            - Prefer proposing and allowing edits over over-questioning.
-
-            FINAL RULES:
-            - Use ONLY feature IDs in the "features" array.
-            - Never output feature names inside the array.
-            - Never invent logic outside these instructions.
-            EOT;
-    }
-
+{
+  "html": "<your friendly HTML message>",
+  "status": "in_progress",
+  "features": [9, 10, 12]
 }
 
+RULES:
+- "features" array contains ONLY non-default feature IDs
+- Add features progressively as you identify needs
+- Include ALL currently selected features (cumulative)
+- "status": "in_progress" during conversation, "completed" when done
+- "html": Use HTML for formatting (<b>, <br>, <ul>, <li>, etc.)
 
+═══════════════════════════════════════
+EXAMPLE CONVERSATION
+═══════════════════════════════════════
+User: "أنا عايز أعمل منصة للدروس الخصوصية وعايز الطلاب يقدروا يحلوا واجبات"
+
+Response:
+{
+  "html": "أهلاً بيك! 🎓<br><br>فكرة رائعة إنك تعمل منصة للدروس الخصوصية!<br><br>بما إنك محتاج <b>واجبات</b>، ضفتلك ميزة <b>التكليفات</b> (75 جنيه/شهر) - هتقدر تعمل واجبات بملفات مرفقة وتتابع تسليمات الطلاب.<br><br>هل محتاج كمان <b>اختبارات</b> علشان تقيّم مستوى الطلاب؟",
+  "status": "in_progress",
+  "features": [10]
+}
+
+═══════════════════════════════════════
+FINAL RULES
+═══════════════════════════════════════
+- NEVER invent features outside the provided list
+- NEVER add default features to the array
+- ALWAYS return cumulative features (don't reset the array)
+- Be helpful, friendly, and efficient
+- Output ONLY valid JSON, no text outside JSON
+EOT;
+    }
+
+    private function formatFeaturesForPrompt(Collection $features): string
+    {
+        if ($features->isEmpty()) {
+            return "No features selected yet.";
+        }
+
+        return $features->map(function ($f) {
+            $default = isset($f['default']) && $f['default'] ? 'true' : 'false';
+            return sprintf(
+                '{ "id": %d, "name": "%s", "description": "%s", "default": %s, "price": %d }',
+                $f['id'],
+                $f['name'] ?? '',
+                $f['description'] ?? '',
+                $default,
+                $f['price'] ?? 0
+            );
+        })->implode(",\n");
+    }
+}

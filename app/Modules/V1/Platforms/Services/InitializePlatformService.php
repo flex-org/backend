@@ -9,7 +9,6 @@ use PHPUnit\Event\Telemetry\System;
 
 class InitializePlatformService
 {
-
     public function getPlatformInitData($user)
     {
         return PlatformInitialization::with('features')
