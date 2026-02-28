@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Modules\V1\Dashboard\Admins\Requests;
+namespace App\Modules\V1\Initialization\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAdminRequest extends FormRequest
+class IsDomainAvailableRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return (is_null($this->user()->platform));
     }
 
     /**
@@ -22,7 +22,7 @@ class StoreAdminRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'domain' => 'required|string|max:100|unique:platforms,domain',
         ];
     }
 }

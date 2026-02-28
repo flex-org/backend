@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Modules\V1\Platforms\Models;
+namespace App\Modules\V1\Initialization\Models;
 
 use App\Models\V1\User;
 use App\Modules\V1\Features\Models\Feature;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class PlatformInitialization extends Model
 {
@@ -22,12 +24,12 @@ class PlatformInitialization extends Model
         'selling_systems' => 'array'
     ];
 
-    public function user()
+    public function user() : BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function features()
+    public function features() : BelongsToMany
     {
         return $this->belongsToMany(Feature::class, 'platform_initial_features', 'platform_id', 'feature_id');
     }

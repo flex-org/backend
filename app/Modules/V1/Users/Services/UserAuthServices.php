@@ -2,13 +2,13 @@
 
 namespace App\Modules\V1\Users\Services;
 
-use App\Models\V1\User;
 use App\Facades\ApiResponse;
+use App\Models\V1\User;
+use App\Modules\V1\Utilities\Services\Auth\AuthWithVerifiedRegisterServices;
+use App\Modules\V1\Utilities\Services\OtpService;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use App\Modules\V1\Utilities\Services\OtpService;
-use App\Modules\V1\Utilities\Services\Auth\AuthWithVerifiedRegisterServices;
 
 class UserAuthServices extends AuthWithVerifiedRegisterServices
 {

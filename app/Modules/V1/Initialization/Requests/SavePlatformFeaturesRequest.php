@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\V1\Platforms\Requests\Initialization;
+namespace App\Modules\V1\Initialization\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -23,7 +23,7 @@ class SavePlatformFeaturesRequest extends FormRequest
     {
         return [
             'features' => 'nullable|array',
-            'features.*' => 'required|integer|exists:features,id',
+            'features.*' => 'required|integer',
         ];
     }
 }

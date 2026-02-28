@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Modules\V1\Platforms\Resources;
+namespace App\Modules\V1\Initialization\Resources;
 
 use App\Modules\V1\Features\Resources\FeatureResource;
-use App\Modules\V1\Platforms\Enums\SellingSystemEnum;
+use App\Modules\V1\Utilities\enums\SellingSystemEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

@@ -5,7 +5,7 @@ enum DynamicFeaturesValue: string
 {
     case STORAGE = 'storage';
     case CAPACITY = 'capacity';
-    case MOBILEAPP = 'mobile_app';
+    case MOBILE_APP = 'mobile_app';
 
     public static function values(): array
     {

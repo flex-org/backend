@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SellingSystemSeeder::class);
         $this->call(DynamicFeatureSeeder::class);
         $this->call(FeatureSeeder::class);
-        $this->call(ThemeSeeder::class);
         $this->call(RoleSeeder::class);
 
     }

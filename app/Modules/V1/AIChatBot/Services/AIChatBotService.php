@@ -2,7 +2,8 @@
 namespace App\Modules\V1\AIChatBot\Services;
 
 use App\Modules\V1\Features\Services\FeatureService;
-use App\Modules\V1\Platforms\Services\InitializePlatformService;
+use App\Modules\V1\Initialization\Services\InitializePlatformService;
+use App\Modules\V1\Utilities\Services\LocalizedCache;
 use Gemini;
 use Gemini\Enums\Role;
 use Gemini\Data\Schema;
@@ -25,34 +26,26 @@ class AIChatBotService
         private InitializePlatformService $initPlatformService
     )
     {
+        $allFeatures = collect($this->featureService->getAll(true));
+        $nonDefaultFeatures = $allFeatures->filter(function ($feature) {
+            return !$feature->default;
+        });
+        $defaultFeatures = $allFeatures->filter(function ($feature) {
+            return $feature->default;
+        });
+
+        $initData = $this->initPlatformService->getPlatformInitData(Auth::user());
+        $selectedIds = collect($initData->features ?? [])->pluck('id');
+        $selectedFeatures = $allFeatures->filter(
+            fn($f) => in_array($f['id'], $selectedIds->all())
+        );
+
         $client = Gemini::client(config('gemini.api_key'));
         $this->usageLimit = config('gemini.daily_chat_tokens_limit');
-
-
-        $allFeatures = collect(
-            Cache::rememberForever('features', function () {
-                return $this->featureService->getAll(true);
-            })
-        );
-        $selectedFeatures = collect(
-            value: $this->initPlatformService
-                ->getPlatformInitData(Auth::user())
-                    ->features ?? []
-        );
-
-        $nonDefaultFeatures = $allFeatures->filter(function ($feature) {
-            return !$feature->is_default;
-        });
-
-        $defaultFeatures = $allFeatures->filter(function ($feature) {
-            return $feature->is_default;
-        });
-
         $systemInstruction = Content::parse(
             part: $this->modelInstructions($nonDefaultFeatures, $defaultFeatures, $selectedFeatures),
             role: Role::MODEL
         );
-
         $this->model = $client->generativeModel('gemini-2.5-flash')
             ->withSystemInstruction($systemInstruction);
     }
@@ -68,7 +61,7 @@ class AIChatBotService
         $response = $this->getModelReply($this->model, $data);
 
         if (($response->features ?? [])) {
-            $response->features = $this->responseFeaturesMaping($response->features );
+            $response->features = $this->responseFeaturesMapping($response->features );
         }
 
         $data['history'][] = Content::parse(part: $response->html, role: Role::MODEL);
@@ -127,11 +120,9 @@ class AIChatBotService
         return $result->json();
     }
 
-    private function responseFeaturesMaping(array $keys): array
+    private function responseFeaturesMapping(array $keys): array
     {
-        $allFeatures = Cache::rememberForever('features', function () {
-            return $this->featureService->getAll(true);
-        });
+        $allFeatures = $this->featureService->getAll(true);
 
         return collect($allFeatures)
             ->filter(fn($f) => in_array($f['id'], $keys))
@@ -152,7 +143,6 @@ class AIChatBotService
         $defaultFeaturesList = $this->mapFeatures($defaultFeatures);
         $selectedFeaturesList = $this->mapFeatures($selectedFeatures);
         $selectedFeatureIds = $selectedFeatures->pluck('id')->implode(', ') ?: 'none';
-
     return <<<EOT
         You are "Gomaa" (جمعة), a friendly and professional sales consultant for an educational platform builder.
 
@@ -162,7 +152,6 @@ class AIChatBotService
         AVAILABLE PAID FEATURES
         ═══════════════════════════════════════
         These are the features you can recommend. You MUST ONLY use features from this list:
-
         {$nonDefaultFeaturesList}
 
         IF USER ASKS ABOUT AVAILABLE PAID FEATURES:
@@ -179,7 +168,7 @@ class AIChatBotService
         {$defaultFeaturesList}
 
         CRITICAL RULES - DEFAULT FEATURES CANNOT BE REMOVED:
-        - Default features are ALWAYS included - never add them to the "features" array
+        - Default features are ALWAYS included - add them to the "features" array
         - Default features CANNOT be removed - they are permanent and essential
         - NEVER ask about default features proactively - they are automatically included, no need to discuss them
         - If user asks to remove a default feature, politely explain it's a core feature that cannot be removed
@@ -188,24 +177,24 @@ class AIChatBotService
         IF USER ASKS ABOUT DEFAULT FEATURES:
         - If user asks: "إيه الميزات الأساسية؟" / "what are the default features?" / "إيه الميزات اللي متضمنة؟"
         - You MUST list ALL default features with their names and descriptions
-        - Explain they are free and automatically included
+        - Explain they are automatically included
         - Example: "الميزات الأساسية اللي متضمنة تلقائياً: [قائمة الميزات]"
 
         IF USER TRIES TO REMOVE DEFAULT FEATURE:
         - Politely refuse: "الميزات الأساسية دي مش ممكن تتشال لأنها أساسية للمنصة" / "This is a core feature that cannot be removed as it's essential for the platform"
         - Explain it's included automatically and is necessary
-        - Do NOT remove it from any array (it shouldn't be in the array anyway)
+        - Do NOT remove it from any array
 
         ═══════════════════════════════════════
-        ALREADY SELECTED FEATURES
+        ALREADY HAS FEATURES
         ═══════════════════════════════════════
-        The user has already selected these features (IDs: [{$selectedFeatureIds}]):
+        The user has already has these features (IDs: [{$selectedFeatureIds}]):
 
         {$selectedFeaturesList}
 
         CRITICAL RULES:
-        - These features are ALREADY selected - DO NOT re-suggest them
-        - DO NOT add them again to the "features" array
+        - These features included default features and features user select before so DO NOT re-suggest them
+        - add them to the "features" array as pre selected
         - Build upon these selections intelligently
         - If the list is empty, the user hasn't selected anything yet
         - Reference existing selections when making related recommendations
@@ -409,7 +398,7 @@ class AIChatBotService
         FINAL RULES
         ═══════════════════════════════════════
         1. NEVER invent features outside the provided list
-        2. NEVER add default features to the array
+        2. if there is pre selected features always add it to features array
         3. NEVER remove default features - they are permanent and essential
         4. NEVER re-suggest already selected features
         5. ALWAYS add features immediately when identified (progressive detection)
@@ -424,7 +413,6 @@ class AIChatBotService
         14. Act like a knowledgeable sales consultant, not a robot
     EOT;
     }
-
 
     private function mapFeatures($features): string
     {

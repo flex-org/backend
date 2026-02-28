@@ -1,7 +1,7 @@
 <?php
-namespace App\Modules\V1\Subscriptions\Enums;
+namespace App\Modules\V1\Platforms\Enums;
 
-enum SubscriptionStatus: string
+enum PLatformStatus: string
 {
     case ACTIVE = 'active';
     case EXPIRED = 'expired';

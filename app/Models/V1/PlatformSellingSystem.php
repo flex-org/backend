@@ -2,8 +2,8 @@
 
 namespace App\Models\V1;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Modules\V1\Platforms\Models\Platform;
+use Illuminate\Database\Eloquent\Model;
 
 class PlatformSellingSystem extends Model
 {

@@ -3,7 +3,7 @@
 namespace App\Models\V1;
 
 use App\Modules\V1\Platforms\Models\Platform;
-use App\Modules\V1\Platforms\Models\PlatformInitialization;
+use App\Modules\V1\Initialization\Models\PlatformInitialization;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;

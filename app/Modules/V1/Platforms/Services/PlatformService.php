@@ -1,32 +1,41 @@
 <?php
 namespace App\Modules\V1\Platforms\Services;
 
+use App\Modules\V1\Platforms\Enums\PLatformStatus;
 use App\Modules\V1\Platforms\Models\Platform;
-use App\Modules\V1\Themes\Models\Theme;
+use Illuminate\Support\Facades\Http;
 
 class PlatformService
 {
-    function create($platformData, $user_id)
+
+    function create($platformData, $user)
     {
-        $platform = Platform::create([
-            'user_id' => $user_id,
-            'theme_id' => Theme::firstWhere('price', null)->id,
+        Platform::create([
             'domain' => $platformData['domain'],
-            'storage' => $platformData['storage'],
-            'capacity' => $platformData['capacity'],
+            'user_id' => $user->id,
+            'started_at' => now(),
+            'renew_at' => now()->addDay(),
+            'cost' => 0,
+            'status' => PLatformStatus::FREE_TRIAL,
         ]);
 
-        $platform->sellingSystems()
-            ->attach(
-                collect($platformData['selling_systems'])
-                    ->pluck('id')
-                    ->toArray()
+        $response = Http::accept('application/json')
+            ->post(
+                config('platforms.single_ed_system.create_tenant'),
+                [
+                    'domain' => $platformData['domain'],
+                    'storage' => $platformData['storage'],
+                    'capacity' => $platformData['capacity'],
+                    'selling_systems' => collect($platformData['selling_systems'])->pluck('id')->toArray(),
+                    'features' => collect($platformData['features'])->pluck('id')->toArray(),
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'password' => $user->password,
+                ]
             );
 
-        return $platform;
+        return $response->body();
     }
-    function platformUrl($domain)
-    {
-        return  'https://'.$domain.'.'.env('FRONTEND_URL')."/dashboard/apperance";
-    }
+
 }

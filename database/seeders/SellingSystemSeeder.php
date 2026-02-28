@@ -3,9 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\V1\SellingSystem;
-use App\Modules\V1\Platforms\Enums\SellingSystemEnum;
+use App\Modules\V1\Utilities\enums\SellingSystemEnum;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Arr;
 
 class SellingSystemSeeder extends Seeder
 {

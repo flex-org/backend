@@ -4,7 +4,6 @@ namespace App\Modules\V1\Utilities\Services\Auth;
 
 use App\Facades\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 Abstract class AuthServices
 {
@@ -20,7 +19,7 @@ Abstract class AuthServices
     }
 
     public function respondWithToken($user, $token)
-    {    
+    {
         return [
             'access_token' => $token,
             'token_type' => 'bearer',

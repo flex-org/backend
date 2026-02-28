@@ -283,12 +283,6 @@ class FeatureSeeder extends Seeder
                 $feature->translateOrNew($locale)->description = $translation['description'];
             }
             $feature->save();
-
-            // إنشاء Permission مرتبط بالـ Feature
-            Permission::firstOrCreate([
-                'name' => 'feature-' . $feature->id,
-                'guard_name' => 'sanctum',
-            ]);
         }
     }
 }

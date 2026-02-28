@@ -1,5 +1,5 @@
 <?php
-namespace App\Modules\V1\Platforms\Enums;
+namespace App\Modules\V1\Utilities\enums;
 
 enum SellingSystemEnum: string
 {

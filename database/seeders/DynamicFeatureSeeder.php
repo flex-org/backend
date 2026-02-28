@@ -22,7 +22,7 @@ class DynamicFeatureSeeder extends Seeder
                 'price' => 0.5,
             ],
             [
-                'name' => DynamicFeaturesValue::MOBILEAPP,
+                'name' => DynamicFeaturesValue::MOBILE_APP,
                 'quantity' => 1,
                 'price' => 350,
             ],

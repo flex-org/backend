@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('domain')->nullable();
             $table->integer('capacity')->default(100);
             $table->integer('storage')->default(50);
-            $table->json('selling_systems')->default([])->nullable();
+            $table->json('selling_systems')->nullable();
             $table->boolean('mobile_app')->default(false);
             $table->integer('step')->default(0);
             $table->timestamps();

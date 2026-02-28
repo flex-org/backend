@@ -19,11 +19,11 @@ return new class extends Migration
         Schema::create('platforms', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('theme_id')->constrained()->cascadeOnDelete();
             $table->string('domain')->unique();
-            $table->integer('storage');
-            $table->integer('capacity');
-            $table->boolean('has_mobile_app')->default(false);
+            $table->date('started_at')->nullable();
+            $table->date('renew_at')->nullable();
+            $table->decimal('cost', 10, 2)->default(0);
+            $table->string('status')->default('free_trial'); // free_trial, active, pending, expired, deactivated, draft
             $table->timestamps();
         });
     }

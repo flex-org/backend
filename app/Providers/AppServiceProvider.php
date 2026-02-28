@@ -3,9 +3,9 @@
 namespace App\Providers;
 
 use App\Facades\ApiResponse;
+use App\Facades\FacadesLogic\ApiResponseLogic;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use App\Facades\FacadesLogic\ApiResponseLogic;
 
 class AppServiceProvider extends ServiceProvider
 {
