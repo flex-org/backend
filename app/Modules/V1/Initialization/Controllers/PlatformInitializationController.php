@@ -62,7 +62,7 @@ class PlatformInitializationController
     public function initPlatformSystems(SavingPlatformSystemsRequest $request)
     {
         $user = Auth::user();
-        if($this->initializationStep($user) != 1)
+        if($this->initializationStep($user) < 1 )
             return ApiResponse::forbidden();
 
         $platformSystems = $request->validated();
@@ -77,7 +77,7 @@ class PlatformInitializationController
     {
         $user = Auth::user();
 
-        if($this->initializationStep($user) != 2)
+        if($this->initializationStep($user) < 2)
             return ApiResponse::forbidden();
 
         $platformDomain = $request->validated();
