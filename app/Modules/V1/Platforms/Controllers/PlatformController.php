@@ -20,10 +20,16 @@ class PlatformController extends Controller
      */
     public function store(InitializePlatformService $initializer)
     {
-        $platformInitData = $initializer->getPlatformInitData(Auth::user());
-        $platformResponse = $this->service->create($platformInitData, Auth::user());
-        $initializer->delete(Auth::user());
-        return $platformResponse;
+        $user = Auth::user();
+        $platformInitData = $initializer->getPlatformInitData($user);
+
+        $result = $this->service->create($platformInitData, $user);
+
+        if ($result['success']) {
+            $initializer->delete($user);
+            return ApiResponse::created($result['data']);
+        }
+        return ApiResponse::message($result['message'], $result['status_code']);
     }
 
     /**
