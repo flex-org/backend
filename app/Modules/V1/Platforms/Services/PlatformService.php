@@ -22,7 +22,7 @@ class PlatformService
                     'storage' => $platformData['storage'],
                     'capacity' => $platformData['capacity'],
                     'selling_systems' => collect($platformData['selling_systems'] ?? [])->pluck('id')->toArray(),
-                    'features' => collect($platformData['features'] ?? [])->pluck('id')->toArray(),
+                    'features' => collect($platformData['features'] ?? [])->pluck('key')->toArray(),
                     'name' => $user->name,
                     'email' => $user->email,
                     'phone' => $user->phone,
@@ -56,7 +56,7 @@ class PlatformService
 
             DB::beginTransaction();
 
-            $platform = Platform::create([
+            Platform::create([
                 'domain' => $platformData['domain'],
                 'user_id' => $user->id,
                 'started_at' => now(),

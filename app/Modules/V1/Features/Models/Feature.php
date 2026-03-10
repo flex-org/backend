@@ -13,7 +13,8 @@ class Feature extends Model
         'icon',
         'price',
         'active',
-        'default'
+        'default',
+        'key'
     ];
 
     public $translatedAttributes = [

@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('features', function (Blueprint $table) {
             $table->id();
             $table->string('icon')->nullable();
+            $table->string('key');
             $table->decimal('price', 10, 2)->nullable();
             $table->boolean('active')->default(true);
             $table->boolean('default')->default(false);
